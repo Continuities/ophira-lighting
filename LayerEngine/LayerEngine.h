@@ -4,16 +4,16 @@
 #define MAX_SPLOTCHES 5
 
 typedef struct {
-  uint16_t h; // 65535
-  uint8_t s; // 255
-  uint8_t v; // 255
-} HSV;
+  uint8_t r; // 255
+  uint8_t g; // 255
+  uint8_t b; // 255
+} RGB;
 
 typedef struct {
-  HSV background;
-  HSV foreground;
-  HSV accent;
-  HSV highlight;
+  RGB background;
+  RGB foreground;
+  RGB accent;
+  RGB highlight;
 } Palette;
 
 typedef struct {
@@ -31,11 +31,18 @@ class VisualLayer {
     
   public:
     VisualLayer(int width, int height, Palette palette);
-    virtual void apply(HSV** frame);
+    virtual void apply(RGB** frame);
     VisualLayer* next;
 };
 
 namespace Layers {
+
+  class Black: public VisualLayer {
+    public:
+      Black(int width, int height, Palette palette);
+      void apply(RGB** frame);
+  };
+
   class Ether: public VisualLayer {
     private:
       double xSpeed;
@@ -44,7 +51,7 @@ namespace Layers {
       double yVariance; // 1
     public:
       Ether(int width, int height, Palette palette);
-      void apply(HSV** frame);
+      void apply(RGB** frame);
   };
 
   class Splotches: public VisualLayer {
@@ -52,7 +59,7 @@ namespace Layers {
       PointValue splotches[MAX_SPLOTCHES];
     public:
       Splotches(int width, int height, Palette palette);
-      void apply(HSV** frame);
+      void apply(RGB** frame);
   };
 };
 
@@ -65,7 +72,7 @@ class LayerEngine {
 
   public:
     LayerEngine(int width, int height);
-    void computeFrame(HSV** frame);
+    void computeFrame(RGB** frame);
     void push(VisualLayer* layer);
     void pop();
 };

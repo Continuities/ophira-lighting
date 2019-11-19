@@ -8,16 +8,17 @@
 #define BRIGHTNESS 85 // 255
 
 const Palette XRAY = {
-  { 39488, 255, 33 },
-  { 38762, 88, 238 },
-  { 32966, 69, 203 },
-  { 54613, 10, 251 }
+  { 8, 25, 53 }, // background
+  { 156, 193, 238 }, // foreground
+  { 148, 202, 203 }, // accent
+  { 251, 250, 251 } // highlight
 };
 
 uint32_t lastFrame;
-HSV** frameBuffer;
+RGB** frameBuffer;
 
 LayerEngine engine = LayerEngine(WIDTH, HEIGHT);
+Layers::Black black = Layers::Black(WIDTH, HEIGHT, XRAY);
 Layers::Ether ether = Layers::Ether(WIDTH, HEIGHT, XRAY);
 Layers::Splotches splotches = Layers::Splotches(WIDTH, HEIGHT, XRAY);
 
@@ -32,15 +33,16 @@ void setup() {
   Serial.begin(9600);
 //  while(!Serial) {}
   
-  frameBuffer = new HSV*[WIDTH];
+  frameBuffer = new RGB*[WIDTH];
   for (int x = 0; x < WIDTH; x++) {
-    frameBuffer[x] = new HSV[HEIGHT];
+    frameBuffer[x] = new RGB[HEIGHT];
     for (int y = 0; y < HEIGHT; y++) {
       frameBuffer[x][y] = { 0, 0, 0 };
     }
   }
   
   lastFrame = millis();
+//  engine.push(&black);
   engine.push(&ether);
   engine.push(&splotches);
 }
@@ -54,9 +56,8 @@ void loop() {
   engine.computeFrame(frameBuffer);
   for (int x = 0; x < WIDTH; x++) {
     for (int y = 0; y < HEIGHT; y++) {
-      HSV colour = frameBuffer[x][y];
-      uint32_t rgbColour = strip.ColorHSV(colour.h, colour.s, colour.v);
-      strip.setPixelColor(getPixelIndex(x, y), rgbColour);
+      RGB colour = frameBuffer[x][y];
+      strip.setPixelColor(getPixelIndex(x, y), colour.r, colour.g, colour.b);
     }
   }
   strip.show();

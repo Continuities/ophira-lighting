@@ -7,7 +7,7 @@ VisualLayer::VisualLayer(int width, int height, Palette palette) {
   this->palette = palette;
   this->next = NULL;
 }
-void VisualLayer::apply(HSV** frame) {
+void VisualLayer::apply(RGB** frame) {
   Serial.println("base");
 }
 
@@ -25,7 +25,7 @@ VisualLayer* LayerEngine::last() {
   return current;
 }
 
-void LayerEngine::computeFrame(HSV** frame) {
+void LayerEngine::computeFrame(RGB** frame) {
   VisualLayer* currentLayer = first;
   while(currentLayer) {
     currentLayer->apply(frame);
