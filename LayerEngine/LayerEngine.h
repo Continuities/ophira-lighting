@@ -1,6 +1,8 @@
 #ifndef LayerEngine_h
 #define LayerEngine_h
 
+#define MAX_SPLOTCHES 5
+
 typedef struct {
   uint16_t h; // 65535
   uint8_t s; // 255
@@ -13,6 +15,13 @@ typedef struct {
   HSV accent;
   HSV highlight;
 } Palette;
+
+typedef struct {
+  int x;
+  int y;
+  double v; // 1
+  double velocity;
+} PointValue;
 
 class VisualLayer {
   protected:
@@ -39,6 +48,8 @@ namespace Layers {
   };
 
   class Splotches: public VisualLayer {
+    private:
+      PointValue splotches[MAX_SPLOTCHES];
     public:
       Splotches(int width, int height, Palette palette);
       void apply(HSV** frame);

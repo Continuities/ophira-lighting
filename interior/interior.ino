@@ -24,6 +24,7 @@ Layers::Splotches splotches = Layers::Splotches(WIDTH, HEIGHT, XRAY);
 Adafruit_NeoPixel strip(WIDTH * HEIGHT, LED_PIN, NEO_BRG + NEO_KHZ800);
 
 void setup() {
+  randomSeed(analogRead(0));
   strip.begin();
   strip.show();
   strip.setBrightness(BRIGHTNESS);
