@@ -43,6 +43,11 @@ class LayerEngine {
 
 namespace Layers {
   class Ether: public VisualLayer {
+    private:
+      double xSpeed;
+      double ySpeed;
+      double xVariance; // 1
+      double yVariance; // 1
     public:
       Ether(int width, int height, Palette palette);
       void apply(HSV** frame);

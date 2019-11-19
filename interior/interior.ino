@@ -51,7 +51,7 @@ void loop() {
     for (int y = 0; y < HEIGHT; y++) {
       HSV colour = frameBuffer[x][y];
       uint32_t rgbColour = strip.ColorHSV(colour.h, colour.s, colour.v);
-      strip.setPixelColor(getPixelIndex(x, y - 1), rgbColour);
+      strip.setPixelColor(getPixelIndex(x, y), rgbColour);
     }
   }
   strip.show();
@@ -61,5 +61,5 @@ int getPixelIndex(int x, int y) {
   if (y % 2 == 0) {
     return (y * WIDTH) + x;
   }
-  return ((y + 1) * WIDTH) -1 - x;
+  return ((y + 1) * WIDTH) - 1 - x;
 }
