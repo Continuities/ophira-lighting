@@ -7,7 +7,9 @@ VisualLayer::VisualLayer(int width, int height, Palette palette) {
   this->palette = palette;
   this->next = NULL;
 }
-void VisualLayer::apply(HSV** frame) {}
+void VisualLayer::apply(HSV** frame) {
+  Serial.println("base");
+}
 
 LayerEngine::LayerEngine(int width, int height) {
   this->width = width;

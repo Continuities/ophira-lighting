@@ -7,7 +7,6 @@ Layers::Ether::Ether(int width, int height, Palette palette) : VisualLayer(width
   xSpeed = 0.02;
   ySpeed = 0.03;
 }
-
 void Layers::Ether::apply(HSV** frame) {
   int period = this->width - 1;
   int shift = 0;
@@ -41,4 +40,9 @@ void Layers::Ether::apply(HSV** frame) {
       frame[x][y].v += (uint8_t) (yShift * variance * yVariance);
     }
   }
+}
+
+Layers::Splotches::Splotches(int width, int height, Palette palette): VisualLayer(width, height, palette) {}
+void Layers::Splotches::apply(HSV** frame) {
+  // TODO
 }

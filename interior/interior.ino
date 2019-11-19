@@ -16,9 +16,12 @@ const Palette XRAY = {
 
 uint32_t lastFrame;
 HSV** frameBuffer;
+
 LayerEngine engine = LayerEngine(WIDTH, HEIGHT);
 Layers::Ether ether = Layers::Ether(WIDTH, HEIGHT, XRAY);
-Adafruit_NeoPixel strip(WIDTH * HEIGHT, LED_PIN, NEO_BRG + NEO_KHZ400);
+Layers::Splotches splotches = Layers::Splotches(WIDTH, HEIGHT, XRAY);
+
+Adafruit_NeoPixel strip(WIDTH * HEIGHT, LED_PIN, NEO_BRG + NEO_KHZ800);
 
 void setup() {
   strip.begin();
@@ -38,15 +41,16 @@ void setup() {
   
   lastFrame = millis();
   engine.push(&ether);
+  engine.push(&splotches);
 }
 
 void loop() {
   if (millis() - lastFrame < 1000 / FPS) {
     return;
   }
+  Serial.println(1000 / (millis() - lastFrame)); // Log FPS
   lastFrame = millis();
   engine.computeFrame(frameBuffer);
-  HSV first = frameBuffer[0][0];
   for (int x = 0; x < WIDTH; x++) {
     for (int y = 0; y < HEIGHT; y++) {
       HSV colour = frameBuffer[x][y];

@@ -16,15 +16,33 @@ typedef struct {
 
 class VisualLayer {
   protected:
-    
     int height;
+    int width;
     Palette palette;
     
   public:
-    int width;
     VisualLayer(int width, int height, Palette palette);
     virtual void apply(HSV** frame);
     VisualLayer* next;
+};
+
+namespace Layers {
+  class Ether: public VisualLayer {
+    private:
+      double xSpeed;
+      double ySpeed;
+      double xVariance; // 1
+      double yVariance; // 1
+    public:
+      Ether(int width, int height, Palette palette);
+      void apply(HSV** frame);
+  };
+
+  class Splotches: public VisualLayer {
+    public:
+      Splotches(int width, int height, Palette palette);
+      void apply(HSV** frame);
+  };
 };
 
 class LayerEngine {
@@ -39,19 +57,6 @@ class LayerEngine {
     void computeFrame(HSV** frame);
     void push(VisualLayer* layer);
     void pop();
-};
-
-namespace Layers {
-  class Ether: public VisualLayer {
-    private:
-      double xSpeed;
-      double ySpeed;
-      double xVariance; // 1
-      double yVariance; // 1
-    public:
-      Ether(int width, int height, Palette palette);
-      void apply(HSV** frame);
-  };
 };
 
 #endif
