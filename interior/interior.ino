@@ -21,6 +21,7 @@ LayerEngine engine = LayerEngine(WIDTH, HEIGHT);
 Layers::Black black = Layers::Black(WIDTH, HEIGHT, XRAY);
 Layers::Ether ether = Layers::Ether(WIDTH, HEIGHT, XRAY);
 Layers::Splotches splotches = Layers::Splotches(WIDTH, HEIGHT, XRAY);
+Layers::Glitch glitch = Layers::Glitch(WIDTH, HEIGHT, XRAY);
 
 Adafruit_NeoPixel strip(WIDTH * HEIGHT, LED_PIN, NEO_BRG + NEO_KHZ800);
 
@@ -45,6 +46,7 @@ void setup() {
 //  engine.push(&black);
   engine.push(&ether);
   engine.push(&splotches);
+  engine.push(&glitch);
 }
 
 void loop() {

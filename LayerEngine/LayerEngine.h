@@ -1,7 +1,7 @@
 #ifndef LayerEngine_h
 #define LayerEngine_h
 
-#define MAX_SPLOTCHES 5
+#define MAX_STUFF 5
 
 typedef struct {
   uint8_t r; // 255
@@ -56,11 +56,21 @@ namespace Layers {
 
   class Splotches: public VisualLayer {
     private:
-      PointValue splotches[MAX_SPLOTCHES];
+      PointValue splotches[MAX_STUFF];
     public:
       Splotches(int width, int height, Palette palette);
       void apply(RGB** frame);
   };
+
+  class Glitch: public VisualLayer {
+    private:
+      PointValue line;
+      bool visible;
+    public:
+      Glitch(int width, int height, Palette palette);
+      void apply(RGB** frame);
+  };
+
 };
 
 class LayerEngine {

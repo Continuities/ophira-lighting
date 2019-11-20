@@ -150,3 +150,46 @@ void Layers::Splotches::apply(RGB** frame) {
     i++;
   }
 }
+
+Layers::Glitch::Glitch(int width, int height, Palette palette): VisualLayer(width, height, palette) {}
+void Layers::Glitch::apply(RGB** frame) {
+  if (!visible) {
+    // TODO: Turn on randomly
+    // Generate a new glitch line
+    line = {
+      random(0, width),
+      random(0, height),
+      (double) random(0, 101) / 100.0,
+      0
+    };
+    visible = true;
+    return;
+  }
+
+  double x = line.x;
+  double y = line.y;
+  double deltaX = line.v;
+  double deltaY = 1 - line.v;
+  while (x < width && y < height) {
+    frame[(int)x][(int)y] = palette.highlight;
+    if (deltaX > deltaY) {
+      x += 1;
+      y += (1 / deltaX) * deltaY;
+    } else {
+      x += (1 / deltaY) * deltaX;
+      y += 1;
+    }
+  }
+  x = line.x;
+  y = line.y;
+  while (x >= 0 && y >= 0) {
+    frame[(int)x][(int)y] = palette.highlight;
+    if (deltaX > deltaY) {
+      x -= 1;
+      y -= (1 / deltaX) * deltaY;
+    } else {
+      x -= (1 / deltaY) * deltaX;
+      y -= 1;
+    }
+  }
+}
