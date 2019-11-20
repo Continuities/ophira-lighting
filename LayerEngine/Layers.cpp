@@ -13,9 +13,9 @@ uint8_t clampToByte(int in) {
 
 RGB blend(RGB first, RGB second, double amount) {
   return {
-    clampToByte(first.r + (second.r * amount)),
-    clampToByte(first.g + (second.g * amount)),
-    clampToByte(first.b + (second.b * amount))
+    clampToByte(first.r * (1.0 - amount) + (second.r * amount)),
+    clampToByte(first.g * (1.0 - amount) + (second.g * amount)),
+    clampToByte(first.b * (1.0 - amount) + (second.b * amount))
   };
 }
 

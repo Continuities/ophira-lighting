@@ -3,6 +3,7 @@
     "memory": "cpp",
     "utility": "cpp",
     "typeinfo": "cpp",
-    "iterator": "cpp"
+    "iterator": "cpp",
+    "algorithm": "cpp"
   }
 }

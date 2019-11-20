@@ -10,7 +10,7 @@
 const Palette XRAY = {
   { 8, 25, 53 }, // background
   { 156, 193, 238 }, // foreground
-  { 148, 202, 203 }, // accent
+  { 182, 239, 194 },//{ 148, 202, 203 }, // accent
   { 251, 250, 251 } // highlight
 };
 
