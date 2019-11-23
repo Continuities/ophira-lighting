@@ -84,6 +84,48 @@ void Layers::Ether::apply(RGB** frame) {
   }
 }
 
+Layers::Dots::Dots(int width, int height, Palette palette): VisualLayer(width, height, palette) {}
+void Layers::Dots::apply(RGB** frame) {
+  int DESIRED_DOTS = 3;
+  double DOT_VELOCITY = 0.02;
+  int numActive = 0;
+
+  // Draw existing dots
+  for (int i = 0; i < sizeof dots / sizeof dots[0]; i++) {
+    PointValue dot = dots[i];
+    if (dot.v <= 0 || dot.v > 1) {
+      continue;
+    }
+
+    frame[dot.x][dot.y] = blend(frame[dot.x][dot.y], palette.foreground, dot.v);
+
+    double newV = dot.v + dot.velocity;
+    if (newV >= 1) {
+      newV = 1;
+      dots[i].velocity *= -1;
+    }
+    dots[i].v = newV;
+
+    numActive++;
+  }
+  
+  // Make new dots, if necessary
+  int i = 0;
+  while (numActive < DESIRED_DOTS && i < sizeof dots / sizeof dots[0]) {
+    if (dots[i].v <= 0 || dots[i].v > 1) {
+      // This dot is unused
+      dots[i] = {
+        random(width),
+        random(height),
+        0.01,
+        (double) random(50, 300) / 10000.0
+      };
+      numActive++;
+    }
+    i++;
+  }
+}
+
 Layers::Splotches::Splotches(int width, int height, Palette palette): VisualLayer(width, height, palette) {}
 void Layers::Splotches::apply(RGB** frame) {
   int DESIRED_SPLOTCHES = 3;
@@ -153,16 +195,22 @@ void Layers::Splotches::apply(RGB** frame) {
 
 Layers::Glitch::Glitch(int width, int height, Palette palette): VisualLayer(width, height, palette) {}
 void Layers::Glitch::apply(RGB** frame) {
+  int GLITCH_CHANCE = 10;
   if (!visible) {
-    // TODO: Turn on randomly
-    // Generate a new glitch line
-    line = {
-      random(0, width),
-      random(0, height),
-      (double) random(0, 101) / 100.0,
-      0
-    };
-    visible = true;
+    if (random(0, 100) <= GLITCH_CHANCE) {
+      // Generate a new glitch line
+      line = {
+        random(0, width),
+        random(0, height),
+        (double) random(0, 101) / 100.0,
+        0
+      };
+      visible = true;
+    }
+    return;
+  }
+  else if (random(0, 100) <= GLITCH_CHANCE) {
+    visible = false;
     return;
   }
 

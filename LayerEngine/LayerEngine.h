@@ -54,6 +54,14 @@ namespace Layers {
       void apply(RGB** frame);
   };
 
+  class Dots: public VisualLayer {
+    private:
+      PointValue dots[MAX_STUFF];
+    public:
+      Dots(int width, int height, Palette palette);
+      void apply(RGB** frame);
+  };
+
   class Splotches: public VisualLayer {
     private:
       PointValue splotches[MAX_STUFF];

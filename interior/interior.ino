@@ -5,7 +5,11 @@
 #define FPS 30
 #define WIDTH 6
 #define HEIGHT 8
-#define BRIGHTNESS 85 // 255
+#define BRIGHTNESS 255 // 255
+#define GLITCH_MIN_TIME 10000 // ms
+#define GLITCH_MAX_TIME 60000 // ms
+#define GLITCH_MIN_DURATION 500 // ms
+#define GLITCH_MAX_DURATION 3000 // ms
 
 const Palette XRAY = {
   { 8, 25, 53 }, // background
@@ -14,12 +18,15 @@ const Palette XRAY = {
   { 251, 250, 251 } // highlight
 };
 
+uint32_t nextGlitch = 0;
+uint32_t glitchOff = 0;
 uint32_t lastFrame;
 RGB** frameBuffer;
 
 LayerEngine engine = LayerEngine(WIDTH, HEIGHT);
 Layers::Black black = Layers::Black(WIDTH, HEIGHT, XRAY);
 Layers::Ether ether = Layers::Ether(WIDTH, HEIGHT, XRAY);
+Layers::Dots dots = Layers::Dots(WIDTH, HEIGHT, XRAY);
 Layers::Splotches splotches = Layers::Splotches(WIDTH, HEIGHT, XRAY);
 Layers::Glitch glitch = Layers::Glitch(WIDTH, HEIGHT, XRAY);
 
@@ -45,8 +52,9 @@ void setup() {
   lastFrame = millis();
 //  engine.push(&black);
   engine.push(&ether);
-  engine.push(&splotches);
-  engine.push(&glitch);
+  engine.push(&dots);
+//  engine.push(&splotches);
+//  engine.push(&glitch);
 }
 
 void loop() {
@@ -55,6 +63,21 @@ void loop() {
   }
   Serial.println(1000 / (millis() - lastFrame)); // Log FPS
   lastFrame = millis();
+
+  if (nextGlitch > 0 && nextGlitch <= lastFrame) {
+    engine.push(&glitch);
+    nextGlitch = 0;
+    glitchOff = millis() + random(GLITCH_MIN_DURATION, GLITCH_MAX_DURATION);
+  }
+  else if (glitchOff > 0 && glitchOff <= lastFrame) {
+    engine.pop();
+    glitchOff = 0;
+  }
+
+  if (nextGlitch == 0 && glitchOff == 0) {
+    nextGlitch = millis() + random(GLITCH_MIN_TIME, GLITCH_MAX_TIME);
+  }
+  
   engine.computeFrame(frameBuffer);
   for (int x = 0; x < WIDTH; x++) {
     for (int y = 0; y < HEIGHT; y++) {
