@@ -79,6 +79,17 @@ namespace Layers {
       void apply(RGB** frame);
   };
 
+  class Spread: public VisualLayer {
+    private:
+      int cX;
+      int cY;
+      int clip;
+      float shift;
+    public:
+      Spread(int width, int height, int centerX, int centerY, int clipDistance, Palette palette);
+      void apply(RGB** frame); 
+  };
+
 };
 
 class LayerEngine {

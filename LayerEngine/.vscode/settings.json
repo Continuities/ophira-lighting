@@ -4,6 +4,8 @@
     "utility": "cpp",
     "typeinfo": "cpp",
     "iterator": "cpp",
-    "algorithm": "cpp"
+    "algorithm": "cpp",
+    "ios": "cpp",
+    "complex": "cpp"
   }
 }

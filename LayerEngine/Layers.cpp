@@ -11,6 +11,16 @@ uint8_t clampToByte(int in) {
   return in;
 }
 
+float wrapPercent(float in) {
+  while (in < 0) {
+    in += 1;
+  }
+  if (in > 1) {
+    in = fmod(in, 1);
+  }
+  return in;
+}
+
 RGB blend(RGB first, RGB second, double amount) {
   return {
     clampToByte(first.r * (1.0 - amount) + (second.r * amount)),
@@ -238,6 +248,27 @@ void Layers::Glitch::apply(RGB** frame) {
     } else {
       x -= (1 / deltaY) * deltaX;
       y -= 1;
+    }
+  }
+}
+
+Layers::Spread::Spread(int width, int height, int centerX, int centerY, int clipDistance, Palette palette): VisualLayer(width, height, palette) {
+  shift = 0;
+  cX = centerX;
+  cY = centerY;
+  clip = clipDistance;
+}
+void Layers::Spread::apply(RGB** frame) {
+  shift = wrapPercent(shift + 0.03);
+  for (int x = 0; x < width; x++) {
+    for (int y = 0; y < height; y++) {
+      float deltaX = x - cX;
+      float deltaY = y - cY;
+      float dist = sqrt(pow(deltaX, 2) + pow(deltaY, 2));
+      if (dist < clip) {
+        float offset = wrapPercent(1 - (dist / clip) + shift);
+        frame[x][y] = blend(frame[x][y], palette.foreground, offset);
+      }
     }
   }
 }
