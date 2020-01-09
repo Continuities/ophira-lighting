@@ -25,26 +25,30 @@ typedef struct {
   double velocity;
 } PointValue;
 
+// Base class for Layers. You'll want to extend this for your custom effects.
 class VisualLayer {
   protected:
-    int height;
-    int width;
-    Palette palette;
+    int height; // height in pixels
+    int width; // width in pixels
+    Palette palette; // colour palette
     
   public:
     VisualLayer(int width, int height, Palette palette);
-    virtual void apply(RGB** frame);
+    virtual void apply(RGB** frame); // called each frame to mutate the framebuffer
     VisualLayer* next;
 };
 
+// Add definitions for new Layer types in here
 namespace Layers {
 
+  // Just sets everything to black
   class Black: public VisualLayer {
     public:
       Black(int width, int height, Palette palette);
       void apply(RGB** frame);
   };
 
+  // Warbly background
   class Ether: public VisualLayer {
     private:
       double xSpeed;
@@ -56,6 +60,7 @@ namespace Layers {
       void apply(RGB** frame);
   };
 
+  // Little flashy dots
   class Dots: public VisualLayer {
     private:
       PointValue dots[MAX_STUFF];
@@ -64,6 +69,7 @@ namespace Layers {
       void apply(RGB** frame);
   };
 
+  // Big flashy splotches
   class Splotches: public VisualLayer {
     private:
       PointValue splotches[MAX_STUFF];
@@ -72,6 +78,7 @@ namespace Layers {
       void apply(RGB** frame);
   };
 
+  // Erratic accent lines that zap around
   class Glitch: public VisualLayer {
     private:
       PointValue line;
@@ -81,6 +88,7 @@ namespace Layers {
       void apply(RGB** frame);
   };
 
+  // Pulsing colour that spreads from a central point
   class Spread: public VisualLayer {
     private:
       int cX;
@@ -94,6 +102,7 @@ namespace Layers {
 
 };
 
+// Composes layers and calculates new frames of colour
 class LayerEngine {
   private:
     int width;
@@ -103,9 +112,9 @@ class LayerEngine {
 
   public:
     LayerEngine(int width, int height);
-    void computeFrame(RGB** frame);
-    void push(VisualLayer* layer);
-    void pop();
+    void computeFrame(RGB** frame); // mutates the framebuffer by composing all the defined layers 
+    void push(VisualLayer* layer); // pushes a new layer into the composition stack
+    void pop(); // pops the top layer off the composition stack
 };
 
 #endif

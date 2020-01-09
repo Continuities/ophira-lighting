@@ -33,6 +33,7 @@ Layers::Spread spread = Layers::Spread(WIDTH, HEIGHT, 1, 1, 5, VEINS);
  */
 int main(int argc, char ** argv) {
 
+  // initialize a blank frame buffer
   frameBuffer = new RGB*[WIDTH];
   for (int x = 0; x < WIDTH; x++) {
     frameBuffer[x] = new RGB[HEIGHT];
@@ -41,6 +42,7 @@ int main(int argc, char ** argv) {
     }
   }
 
+  // Push a few layers into the composition stack
   engine.push(&black);
   engine.push(&spread);
   engine.push(&glitch);
