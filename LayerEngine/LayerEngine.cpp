@@ -1,4 +1,4 @@
-#include "Arduino.h"
+#include "stdio.h"
 #include "LayerEngine.h"
 
 VisualLayer::VisualLayer(int width, int height, Palette palette) {
@@ -7,9 +7,7 @@ VisualLayer::VisualLayer(int width, int height, Palette palette) {
   this->palette = palette;
   this->next = NULL;
 }
-void VisualLayer::apply(RGB** frame) {
-  Serial.println("base");
-}
+void VisualLayer::apply(RGB** frame) {}
 
 LayerEngine::LayerEngine(int width, int height) {
   this->width = width;

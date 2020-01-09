@@ -1,6 +1,8 @@
 #ifndef LayerEngine_h
 #define LayerEngine_h
 
+#include <stdint.h>
+
 #define MAX_STUFF 5
 
 typedef struct {

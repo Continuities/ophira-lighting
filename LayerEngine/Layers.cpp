@@ -1,5 +1,24 @@
-#include "Arduino.h"
+#include "stdlib.h"
+#include "stdio.h"
+#include "math.h"
 #include "LayerEngine.h"
+
+#define PI 3.1415926535897932384626433832795
+
+extern long random(long howbig) {
+  if ( howbig == 0 ) {
+    return 0 ;
+  }
+  return rand() % howbig;
+}
+
+extern long random(long howsmall, long howbig) {
+  if (howsmall >= howbig) {
+    return howsmall;
+  }
+  long diff = howbig - howsmall;
+  return random(diff) + howsmall;
+}
 
 uint8_t clampToByte(int in) {
   if (in > 255) {
@@ -84,7 +103,6 @@ void Layers::Ether::apply(RGB** frame) {
     for (int y = 0; y < this->height; y++) {
       double yShift = sin((2 * PI * y) / (this->height - 1));
       double pixelVariance = (xShift * variance * xVariance) + (yShift * variance * yVariance);
-      Serial.println(pixelVariance * palette.background.r);
       frame[x][y] = {
         variate(palette.background.r, pixelVariance),
         variate(palette.background.g, pixelVariance),

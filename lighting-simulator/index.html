@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Ophira Lighting Simulator</title>
+    <style>
+      html, body {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        background: black;
+      }
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      .row {
+        width: 100%;
+        display: flex;
+      }
+      .pixel {
+        height: 20px;
+        width: 20px;
+        border-radius: 50%;
+        border: 1px solid #ccc;
+        margin: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="status">Downloading...</div>
+    <progress value="0" max="100" id="progress" hidden=1></progress>
+
+    <div id="pixel-grid"></div>
+
+    <script type='text/javascript'>
+      const statusElement = document.getElementById('status');
+      const progressElement = document.getElementById('progress');
+
+      const FPS = 30;
+
+      let width = 0;
+      let height = 0;
+
+      Module = {
+        preRun: [],
+        postRun: [],
+        print: (...args) => console.log(args.join(' ')),
+        printErr: (...args) => console.error(args.join(' ')),
+        setStatus: text => {
+          if (!Module.setStatus.last) {
+            Module.setStatus.last = { time: Date.now(), text: '' };
+          }
+          if (text === Module.setStatus.last.text) {
+            return;
+          }
+          const m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+          const now = Date.now();
+          if (m && now - Module.setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
+          Module.setStatus.last.time = now;
+          Module.setStatus.last.text = text;
+          if (m) {
+            text = m[1];
+            progressElement.value = parseInt(m[2])*100;
+            progressElement.max = parseInt(m[4])*100;
+            progressElement.hidden = false;
+          } else {
+            progressElement.value = null;
+            progressElement.max = null;
+            progressElement.hidden = true;
+          }
+          statusElement.innerHTML = text;
+        },
+        totalDependencies: 0,
+        monitorRunDependencies: function(left) {
+          this.totalDependencies = Math.max(this.totalDependencies, left);
+          Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+        }
+      };
+      Module.setStatus('Downloading...');
+      window.onerror = function() {
+        Module.setStatus('Exception thrown, see JavaScript console');
+        Module.setStatus = function(text) {
+          if (text) Module.printErr('[post-exception status] ' + text);
+        };
+      };
+
+      Module.onRuntimeInitialized = () => {
+        width = _getWidth();
+        height = _getHeight();
+        createPixels(width, height);
+        setTimeout(animate, 0); // Needs to be delayed, or there's a memory access error?
+      }
+
+      function createPixels() {
+        const grid = document.getElementById('pixel-grid');
+        for (let x = 0; x < width; x++) {
+          const row = document.createElement('div');
+          row.className='row';
+          for (let y = 0; y < height; y++) {
+            const pixel = document.createElement('div');
+            pixel.className = 'pixel';
+            pixel.id = `p-${x}-${y}`;
+            row.appendChild(pixel);
+          }
+          grid.appendChild(row);
+        }
+      }
+
+      function animate() {
+        setTimeout(animate, 1000 / FPS);
+        _computeFrame();
+        for (let x = 0; x < width; x++) {
+          for (let y = 0; y < height; y++) {
+            const pixelColour = `#${_getPixel(x, y).toString(16).padStart(6, '0')}`;
+
+            document.getElementById(`p-${x}-${y}`).style.backgroundColor = pixelColour;
+          }
+        } 
+      }
+    </script>
+    {{{ SCRIPT }}}
+  </body>
+</html>
