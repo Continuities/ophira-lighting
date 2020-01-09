@@ -1,3 +1,4 @@
+#include <string.h>
 #include "Network.h"
 #include "BluefruitConfig.h"
 
@@ -45,16 +46,55 @@ bool Peripheral::init() {
   return true;
 }
 
-String Peripheral::read() {
+bool Peripheral::write(char* msg) {
+  ble.print("AT+BLEUARTTX=");
+  ble.print(msg);
+  ble.println(EOM_CHAR);
+  if (!ble.waitForOK() ) {
+    Serial.print(F("Failed to send: ")); Serial.println(msg);
+    return false;
+  }
+  return true;
+}
+
+Command Peripheral::read() {
   ble.println("AT+BLEUARTRX");
   ble.readline();
   if (strcmp(ble.buffer, "OK") == 0) {
     // no data
-    return "";
+    return { NONE, "" };
   }
   // There's some data in the buffer
-  String data = ble.buffer;
+  char* message = ble.buffer;
   ble.waitForOK();
-  return data;
+
+  // Strip EOM character, if it's there
+  if (message[strlen(message) - 1] == EOM_CHAR) {
+    message[strlen(message) - 1] = 0;
+  }
+
+  char* cmd = strtok(message, " ");
+  if (cmd == NULL) {
+    Serial.print(F("Bad command: ")); Serial.println(message);
+    return { NONE, "" };
+  }
+
+  char* data = strtok(NULL, " ");
+  if (data == NULL) {
+    data = "";
+  }
+
+  if (strcmp(cmd, "SYN") == 0) {
+    // Invisibly send an ACK
+    write("ACK");
+    return { NONE, "" };
+  }
+
+  if (strcmp(cmd, "SET_LED") == 0) {
+    return { SET_LED, data };
+  }
+
+  Serial.print(F("Unrecognized command: ")); Serial.println(cmd);
+  return { NONE, "" };
 }
 

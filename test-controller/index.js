@@ -1,6 +1,21 @@
 const noble = require('@abandonware/noble');
 const Feather = require('feather-ble');
 
+const stdin = process.stdin;
+stdin.setEncoding('utf-8');
+
+const peripherals = [];
+
+function once(fn) {
+  let fired = false;
+  return (...args) => {
+    if (!fired) {
+      fired = true;
+      fn(...args);
+    }
+  }
+}
+
 noble.on('stateChange', state => {
   if (state === 'poweredOn') {
     console.log('Scanning');
@@ -18,7 +33,8 @@ noble.on('discover', peripheral => {
   console.log('Found a Feather');
   const feather = new Feather({ 
     peripheral,
-    verbose: true
+    // rssi: true,
+    // verbose: true
   });
   feather.on("ready", err => {
     if (err) {
@@ -28,9 +44,13 @@ noble.on('discover', peripheral => {
     feather.sendMessage("SYN");
   });
   
-  feather.on("message", msg => {
-    console.log(`Message: ${msg}`);
-  });
+  feather.on("message", once(msg => {
+    if (msg === 'ACK') {
+      // This is one of ours
+      peripherals.push(feather);
+      console.log('Feather registered');
+    }
+  }));
   
   feather.on("rssi", (err, rssi) => {
     if (err) {
@@ -42,7 +62,25 @@ noble.on('discover', peripheral => {
   
   feather.on("disconnect", () => {
     console.log('Feather disconnected');
+    noble.stopScanning();
+    setTimeout(() => noble.startScanning(), 500);
+    const index = peripherals.indexOf(feather);
+    if (index >= 0) {
+      // Remove from the broadcast list
+      peripherals.splice(index, 1);
+    }
   });
   
   feather.setup();
+});
+
+stdin.on('data', function (data) {
+  // User input exit.
+  if(data === 'exit\n') {
+    process.exit();
+  } 
+  else {
+    console.log(`[TX] (${peripherals.length} devices) ${data}`);
+    peripherals.forEach(p => p.sendMessage(data));
+  }
 });
