@@ -7,8 +7,8 @@ Experimenting with a web-based environment so I can develop lighting patterns wi
 - `brew install binaryen`
 - `brew install llvm`
 - Edit `~/.emscripten`
-.- set `LLVM_ROOT` to `/usr/local/opt/llvm`
-.- set `BINARYAN_ROOT` to `/usr/local`
+  - set `LLVM_ROOT` to `/usr/local/opt/llvm`
+  - set `BINARYAN_ROOT` to `/usr/local`
 - `yarn build`
 - `yarn start`
 
