@@ -3,7 +3,8 @@
         {
             "name": "Mac",
             "includePath": [
-                "/Users/michael/Library/Arduino15/packages/adafruit/hardware/samd/1.5.9/**"
+                "/Users/michael/Library/Arduino15/packages/adafruit/hardware/samd/1.5.9/**",
+                "/Users/michael/Library/Arduino15/packages/adafruit/tools/**"
             ],
             "forcedInclude": [
                 "/Users/michael/Library/Arduino15/packages/adafruit/hardware/samd/1.5.9/cores/arduino/Arduino.h"

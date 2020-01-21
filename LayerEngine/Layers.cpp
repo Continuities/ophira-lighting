@@ -5,19 +5,19 @@
 
 #define PI 3.1415926535897932384626433832795
 
-extern long random(long howbig) {
+extern long rnd(long howbig) {
   if ( howbig == 0 ) {
     return 0 ;
   }
   return rand() % howbig;
 }
 
-extern long random(long howsmall, long howbig) {
+extern long rnd(long howsmall, long howbig) {
   if (howsmall >= howbig) {
     return howsmall;
   }
   long diff = howbig - howsmall;
-  return random(diff) + howsmall;
+  return rnd(diff) + howsmall;
 }
 
 uint8_t clampToByte(int in) {
@@ -143,10 +143,10 @@ void Layers::Dots::apply(RGB** frame) {
     if (dots[i].v <= 0 || dots[i].v > 1) {
       // This dot is unused
       dots[i] = {
-        random(width),
-        random(height),
+        rnd(width),
+        rnd(height),
         0.01,
-        (double) random(50, 300) / 10000.0
+        (double) rnd(50, 300) / 10000.0
       };
       numActive++;
     }
@@ -210,10 +210,10 @@ void Layers::Splotches::apply(RGB** frame) {
     if (splotches[i].v <= 0 || splotches[i].v > 1) {
       // This splotch is unused
       splotches[i] = {
-        random(width),
-        random(height),
+        rnd(width),
+        rnd(height),
         0.01,
-        (double) random(50, 300) / 10000.0
+        (double) rnd(50, 300) / 10000.0
       };
       numActive++;
     }
@@ -225,19 +225,19 @@ Layers::Glitch::Glitch(int width, int height, Palette palette): VisualLayer(widt
 void Layers::Glitch::apply(RGB** frame) {
   int GLITCH_CHANCE = 10;
   if (!visible) {
-    if (random(0, 100) <= GLITCH_CHANCE) {
+    if (rnd(0, 100) <= GLITCH_CHANCE) {
       // Generate a new glitch line
       line = {
-        random(0, width),
-        random(0, height),
-        (double) random(0, 101) / 100.0,
+        rnd(0, width),
+        rnd(0, height),
+        (double) rnd(0, 101) / 100.0,
         0
       };
       visible = true;
     }
     return;
   }
-  else if (random(0, 100) <= GLITCH_CHANCE) {
+  else if (rnd(0, 100) <= GLITCH_CHANCE) {
     visible = false;
     return;
   }
