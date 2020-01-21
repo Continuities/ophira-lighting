@@ -1,5 +1,6 @@
 #include <Adafruit_NeoPixel.h>
 #include <LayerEngine.h>
+#include <LightMapper.h>
 
 #define LED_PIN 6
 #define FPS 30
@@ -29,6 +30,8 @@ Layers::Ether ether = Layers::Ether(WIDTH, HEIGHT, XRAY);
 Layers::Dots dots = Layers::Dots(WIDTH, HEIGHT, XRAY);
 Layers::Splotches splotches = Layers::Splotches(WIDTH, HEIGHT, XRAY);
 Layers::Glitch glitch = Layers::Glitch(WIDTH, HEIGHT, XRAY);
+
+LightMapper lightMapper = LightMapper(WIDTH, HEIGHT);
 
 Adafruit_NeoPixel strip(WIDTH * HEIGHT, LED_PIN, NEO_BRG + NEO_KHZ800);
 
@@ -81,16 +84,12 @@ void loop() {
   engine.computeFrame(frameBuffer);
   for (int x = 0; x < WIDTH; x++) {
     for (int y = 0; y < HEIGHT; y++) {
-      RGB colour = frameBuffer[x][y];
-      strip.setPixelColor(getPixelIndex(x, y), colour.r, colour.g, colour.b);
+      int index = lightMapper.getPixelIndex(x, y);
+      if (index >= 0) {
+        RGB colour = frameBuffer[x][y];
+        strip.setPixelColor(lightMapper.getPixelIndex(x, y), colour.r, colour.g, colour.b);
+      }
     }
   }
   strip.show();
-}
-
-int getPixelIndex(int x, int y) {
-  if (y % 2 == 0) {
-    return (y * WIDTH) + x;
-  }
-  return ((y + 1) * WIDTH) - 1 - x;
 }

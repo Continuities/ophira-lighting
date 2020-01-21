@@ -1,5 +1,6 @@
 #include <Adafruit_NeoPixel.h>
 #include <LayerEngine.h>
+#include <LightMapper.h>
 
 #define LED_PIN 6
 #define FPS 30
@@ -23,6 +24,8 @@ Layers::Black black = Layers::Black(WIDTH, HEIGHT, VEINS);
 Layers::Glitch glitch = Layers::Glitch(WIDTH, HEIGHT, VEINS);
 Layers::Spread spread = Layers::Spread(WIDTH, HEIGHT, 1, 1, 5, VEINS);
 //Layers::Spread spread2 = Layers::Spread(WIDTH, HEIGHT, WIDTH - 1, HEIGHT - 1, VEINS);
+
+LightMapper lightMapper = LightMapper(WIDTH, HEIGHT);
 
 void setup() {
   strip.begin();
@@ -52,16 +55,12 @@ void loop() {
   engine.computeFrame(frameBuffer);
   for (int x = 0; x < WIDTH; x++) {
     for (int y = 0; y < HEIGHT; y++) {
-      RGB colour = frameBuffer[x][y];
-      strip.setPixelColor(getPixelIndex(x, y), colour.r, colour.g, colour.b);
+      int index = lightMapper.getPixelIndex(x, y);
+      if (index >= 0) {
+        RGB colour = frameBuffer[x][y];
+        strip.setPixelColor(index, colour.r, colour.g, colour.b);
+      }
     }
   }
   strip.show();
-}
-
-int getPixelIndex(int x, int y) {
-  if (y % 2 == 0) {
-    return (y * WIDTH) + x;
-  }
-  return ((y + 1) * WIDTH) - 1 - x;
 }

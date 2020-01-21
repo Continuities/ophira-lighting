@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "clean": "rm -rf build",
-    "build": "mkdir -p ./build && emcc ../LayerEngine/LayerEngine.cpp ../LayerEngine/Layers.cpp scene.cpp -std=c++11 -s WASM=1 --shell-file index.html -o build/harness.html -s NO_EXIT_RUNTIME=1 -s \"EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']\"",
+    "build": "mkdir -p ./build && emcc ../LightMapper/LightMapper.cpp ../LayerEngine/LayerEngine.cpp ../LayerEngine/Layers.cpp scene.cpp -std=c++11 -s WASM=1 --shell-file index.html -o build/harness.html -s NO_EXIT_RUNTIME=1 -s \"EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']\"",
     "start": "node index.js"
   },
   "dependencies": {

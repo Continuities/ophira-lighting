@@ -64,6 +64,7 @@
 
       let width = 0;
       let height = 0;
+      let stripLength = 0;
 
       Module = {
         preRun: [],
@@ -111,20 +112,29 @@
       Module.onRuntimeInitialized = () => {
         width = _getWidth();
         height = _getHeight();
-        createPixels(width, height);
+        createPixels(width, height, {
+
+        });
         setTimeout(animate, 0); // Needs to be delayed, or there's a memory access error?
       }
 
-      function createPixels() {
+      function createPixels(deadzones) {
         const grid = document.getElementById('pixel-grid');
-        for (let x = 0; x < width; x++) {
+        stripLength = 0;
+        for (let y = 0; y < height; y++) {
           const row = document.createElement('div');
           row.className='row';
-          for (let y = 0; y < height; y++) {
+          for (let x = 0; x < width; x++) {
             const pixel = document.createElement('div');
             pixel.className = 'pixel';
-            pixel.id = `p-${x}-${y}`;
-            row.appendChild(pixel);
+            pixel.id = `p-${stripLength}`;
+            if (y % 2 > 0) {
+              row.prepend(pixel);
+            }
+            else {
+              row.appendChild(pixel);
+            }
+            stripLength++;
           }
           grid.appendChild(row);
         }
@@ -133,12 +143,9 @@
       function animate() {
         setTimeout(animate, 1000 / FPS);
         _computeFrame();
-        for (let x = 0; x < width; x++) {
-          for (let y = 0; y < height; y++) {
-            const pixelColour = `#${_getPixel(x, y).toString(16).padStart(6, '0')}`;
-
-            document.getElementById(`p-${x}-${y}`).style.backgroundColor = pixelColour;
-          }
+        for (let i = 0; i < stripLength; i++) {
+          const pixelColour = `#${_getPixel(i).toString(16).padStart(6, '0')}`;
+          document.getElementById(`p-${i}`).style.backgroundColor = pixelColour;
         } 
       }
 

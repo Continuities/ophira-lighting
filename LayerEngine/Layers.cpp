@@ -290,3 +290,47 @@ void Layers::Spread::apply(RGB** frame) {
     }
   }
 }
+
+Layers::VerticalStripes::VerticalStripes(int width, int height, Palette palette): VisualLayer(width, height, palette) {}
+void Layers::VerticalStripes::apply(RGB** frame) {
+  for (int x = 0; x < width; x++) {
+    for (int y = 0; y < height; y++) {
+      switch (x % 4) {
+        case 0:
+          frame[x][y] = palette.background;
+          break;
+        case 1:
+          frame[x][y] = palette.foreground;
+          break;
+        case 2:
+          frame[x][y] = palette.accent;
+          break;
+        case 3:
+          frame[x][y] = palette.highlight;
+          break;
+      }
+    }
+  }
+}
+
+Layers::HorizontalStripes::HorizontalStripes(int width, int height, Palette palette): VisualLayer(width, height, palette) {}
+void Layers::HorizontalStripes::apply(RGB** frame) {
+  for (int x = 0; x < width; x++) {
+    for (int y = 0; y < height; y++) {
+      switch (y % 4) {
+        case 0:
+          frame[x][y] = palette.background;
+          break;
+        case 1:
+          frame[x][y] = palette.foreground;
+          break;
+        case 2:
+          frame[x][y] = palette.accent;
+          break;
+        case 3:
+          frame[x][y] = palette.highlight;
+          break;
+      }
+    }
+  }
+}

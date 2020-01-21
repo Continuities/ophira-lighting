@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <emscripten/emscripten.h>
 #include "../LayerEngine/LayerEngine.h"
+#include "../LightMapper/LightMapper.h"
 
 
 /* =================================================
@@ -10,6 +11,7 @@
 
 #define HEIGHT 8 // Height of the pixel grid
 #define WIDTH 6 // Width of the pixel grid
+#define STRIP_LENGTH HEIGHT * WIDTH // number of pixels in the strip
 
 // Current Palette
 const Palette VEINS = {
@@ -18,14 +20,24 @@ const Palette VEINS = {
   { 0, 0, 0 }, // accent
   { 86,100,39 }, // highlight
 };
+const Palette TEST_STRIPES = {
+  { 255, 0, 0 },
+  { 0, 255, 0 },
+  { 0, 0, 255 },
+  { 0, 0, 0}
+};
 
+RGB strip[STRIP_LENGTH];
 RGB** frameBuffer;
 LayerEngine engine = LayerEngine(WIDTH, HEIGHT);
 
 // Initialized the layers to use in the scene
+Layers::HorizontalStripes testPattern = Layers::HorizontalStripes(WIDTH, HEIGHT, TEST_STRIPES);
 Layers::Black black = Layers::Black(WIDTH, HEIGHT, VEINS);
 Layers::Glitch glitch = Layers::Glitch(WIDTH, HEIGHT, VEINS);
 Layers::Spread spread = Layers::Spread(WIDTH, HEIGHT, 1, 1, 5, VEINS);
+
+LightMapper lightMapper = LightMapper(WIDTH, HEIGHT);
 
 /**
  * Analogous to Arduino's setup() function
@@ -33,7 +45,12 @@ Layers::Spread spread = Layers::Spread(WIDTH, HEIGHT, 1, 1, 5, VEINS);
  */
 int main(int argc, char ** argv) {
 
-  // initialize a blank frame buffer
+  // initialize the virtual pixel strip
+  for (int i = 0; i < STRIP_LENGTH; i++) {
+    strip[i] = { 0, 0, 0 };
+  }
+
+  // initialize the frame buffer
   frameBuffer = new RGB*[WIDTH];
   for (int x = 0; x < WIDTH; x++) {
     frameBuffer[x] = new RGB[HEIGHT];
@@ -43,6 +60,7 @@ int main(int argc, char ** argv) {
   }
 
   // Push a few layers into the composition stack
+  // engine.push(&testPattern);
   engine.push(&black);
   engine.push(&spread);
   engine.push(&glitch);
@@ -61,10 +79,18 @@ extern "C" {
 
 void EMSCRIPTEN_KEEPALIVE computeFrame() {
   engine.computeFrame(frameBuffer);
+  for (int x = 0; x < WIDTH; x++) {
+    for (int y = 0; y < HEIGHT; y++) {
+      int index = lightMapper.getPixelIndex(x, y);
+      if (index >= 0) {
+        strip[index] = frameBuffer[x][y];
+      }
+    }
+  }
 }
 
-uint32_t EMSCRIPTEN_KEEPALIVE getPixel(int x, int y) {
-  RGB rgb = frameBuffer[x][y];
+uint32_t EMSCRIPTEN_KEEPALIVE getPixel(int index) {
+  RGB rgb = strip[index];
   return ((rgb.r & 0xff) << 16) + ((rgb.g & 0xff) << 8) + (rgb.b & 0xff);
 }
 

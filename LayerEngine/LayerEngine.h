@@ -100,6 +100,20 @@ namespace Layers {
       void apply(RGB** frame); 
   };
 
+  // Vertical test pattern
+  class VerticalStripes: public VisualLayer {
+    public:
+      VerticalStripes(int width, int height, Palette palette);
+      void apply(RGB** frame);
+  };
+
+  // Horizontal test pattern
+  class HorizontalStripes: public VisualLayer {
+    public:
+      HorizontalStripes(int width, int height, Palette palette);
+      void apply(RGB** frame);
+  };
+
 };
 
 // Composes layers and calculates new frames of colour
