@@ -113,30 +113,66 @@
         width = _getWidth();
         height = _getHeight();
         createPixels(width, height, {
-
+          0: [
+            [1, 3],
+            [7, 9]
+          ],
+          1: [
+            [1, 3],
+            [7, 9]
+          ],
+          2: [
+            [1, 3],
+            [7, 9]
+          ],
+          3: [
+            [1, 3],
+            [7, 9]
+          ]
         });
         setTimeout(animate, 0); // Needs to be delayed, or there's a memory access error?
       }
 
-      function createPixels(deadzones) {
+      function isInDeadZone(x, y, deadzones) {
+        console.log(deadzones[y]);
+        if (!deadzones[y]) {
+          return false;
+        }
+        for (let zone of deadzones[y]) {
+          console.log(zone);
+          if (x >= zone[0] && x < zone[1]) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      function createPixels(width, height, deadzones) {
+        console.log(deadzones);
         const grid = document.getElementById('pixel-grid');
         stripLength = 0;
         for (let y = 0; y < height; y++) {
           const row = document.createElement('div');
           row.className='row';
-          for (let x = 0; x < width; x++) {
+          for (let col = 0; col < width; col++) {
+            const x = y % 2 == 0 ? col : (width - 1) - col;
             const pixel = document.createElement('div');
-            pixel.className = 'pixel';
-            pixel.id = `p-${stripLength}`;
+            if (isInDeadZone(x, y, deadzones)) {
+              pixel.className = 'pixel dead';
+            }
+            else {
+              pixel.className = 'pixel';
+              pixel.id = `p-${stripLength}`;
+              stripLength++;
+            }
             if (y % 2 > 0) {
               row.prepend(pixel);
             }
             else {
               row.appendChild(pixel);
             }
-            stripLength++;
           }
-          grid.appendChild(row);
+          grid.prepend(row);
         }
       }
 

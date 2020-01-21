@@ -10,7 +10,7 @@
  * ================================================= */
 
 #define HEIGHT 8 // Height of the pixel grid
-#define WIDTH 6 // Width of the pixel grid
+#define WIDTH 12 // Width of the pixel grid
 #define STRIP_LENGTH HEIGHT * WIDTH // number of pixels in the strip
 
 // Current Palette
@@ -32,10 +32,10 @@ RGB** frameBuffer;
 LayerEngine engine = LayerEngine(WIDTH, HEIGHT);
 
 // Initialized the layers to use in the scene
-Layers::HorizontalStripes testPattern = Layers::HorizontalStripes(WIDTH, HEIGHT, TEST_STRIPES);
+Layers::VerticalStripes testPattern = Layers::VerticalStripes(WIDTH, HEIGHT, TEST_STRIPES);
 Layers::Black black = Layers::Black(WIDTH, HEIGHT, VEINS);
 Layers::Glitch glitch = Layers::Glitch(WIDTH, HEIGHT, VEINS);
-Layers::Spread spread = Layers::Spread(WIDTH, HEIGHT, 1, 1, 5, VEINS);
+Layers::Spread spread = Layers::Spread(WIDTH, HEIGHT, WIDTH / 2, HEIGHT / 2, 8, VEINS);
 
 LightMapper lightMapper = LightMapper(WIDTH, HEIGHT);
 
@@ -49,6 +49,18 @@ int main(int argc, char ** argv) {
   for (int i = 0; i < STRIP_LENGTH; i++) {
     strip[i] = { 0, 0, 0 };
   }
+
+  // Add deadzones
+  // This should mirror the "physical" strip construction
+  // in index.html
+  lightMapper.addDeadZone({ 0, 1, 3 });
+  lightMapper.addDeadZone({ 0, 7, 9 });
+  lightMapper.addDeadZone({ 1, 1, 3 });
+  lightMapper.addDeadZone({ 1, 7, 9 });
+  lightMapper.addDeadZone({ 2, 1, 3 });
+  lightMapper.addDeadZone({ 2, 7, 9 });
+  lightMapper.addDeadZone({ 3, 1, 3 });
+  lightMapper.addDeadZone({ 3, 7, 9 });
 
   // initialize the frame buffer
   frameBuffer = new RGB*[WIDTH];

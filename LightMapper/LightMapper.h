@@ -26,7 +26,7 @@ class LightMapper {
     int getPixelIndex(int x, int y);
 
     // Adds a deadzone to the grid
-    LightMapper addDeadZone(PixelRange range);
+    void addDeadZone(PixelRange range);
 };
 
 #endif 

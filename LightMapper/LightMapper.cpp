@@ -16,19 +16,21 @@ int LightMapper::getPixelIndex(int x, int y) {
   int withoutDeadZones = indexWithoutDeadZones(x, y, width);
   int deadZoneModifier = 0;
   for (PixelRange range : deadZones) {
-    int start = indexWithoutDeadZones(range.row, range.start, width);
-    if (withoutDeadZones >= start) {
-      int end = indexWithoutDeadZones(range.row, range.end, width);
-      if (withoutDeadZones < end) {
+    int start = indexWithoutDeadZones(range.start, range.row, width);
+    int end = indexWithoutDeadZones(range.end, range.row, width);
+    int firstIndex = end > start ? start : end + 1;
+    int lastIndex = end > start ? end : start + 1;
+    if (withoutDeadZones >= firstIndex) {
+      if (withoutDeadZones < lastIndex) {
         // We're in the deadzone
         return -1;
       }
-      deadZoneModifier += end - start;
+      deadZoneModifier += lastIndex - firstIndex;
     }
   }
   return withoutDeadZones - deadZoneModifier;
 }
 
-LightMapper LightMapper::addDeadZone(PixelRange range) {
+void LightMapper::addDeadZone(PixelRange range) {
   deadZones.push_back(range);
 }
