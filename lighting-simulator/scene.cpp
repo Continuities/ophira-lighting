@@ -26,6 +26,12 @@ const Palette TEST_STRIPES = {
   { 0, 0, 255 },
   { 0, 0, 0}
 };
+const Palette XRAY = {
+  { 8, 25, 53 }, // background
+  { 156, 193, 238 }, // foreground
+  { 182, 239, 194 },//{ 148, 202, 203 }, // accent
+  { 251, 250, 251 } // highlight
+};
 
 RGB strip[STRIP_LENGTH];
 RGB** frameBuffer;
@@ -34,13 +40,16 @@ LayerEngine engine = LayerEngine(WIDTH, HEIGHT);
 // Initialized the layers to use in the scene
 Layers::VerticalStripes testPattern = Layers::VerticalStripes(WIDTH, HEIGHT, TEST_STRIPES);
 Layers::Black black = Layers::Black(WIDTH, HEIGHT, VEINS);
-Layers::Glitch glitch = Layers::Glitch(WIDTH, HEIGHT, VEINS);
+Layers::Glitch glitch = Layers::Glitch(WIDTH, HEIGHT, XRAY);
 Layers::Spread spread = Layers::Spread(WIDTH, HEIGHT, WIDTH / 2, HEIGHT / 2, 8, VEINS);
+Layers::Ether ether = Layers::Ether(WIDTH, HEIGHT, XRAY);
+Layers::Dots dots = Layers::Dots(WIDTH, HEIGHT, XRAY);
+Layers::Splotches splotches = Layers::Splotches(WIDTH, HEIGHT, XRAY);
 
 LightMapper lightMapper = LightMapper(WIDTH, HEIGHT);
 
-// Wall-specific deadzone definitions
-void addSpleenDeadzones() {
+// Wall-specific layout definitions
+void addSpleenParameters() {
   lightMapper.addDeadZone({ 8, 23, 38 });
   lightMapper.addDeadZone({ 9, 23, 38 });
   lightMapper.addDeadZone({ 10, 22, 38 });
@@ -66,6 +75,18 @@ void addSpleenDeadzones() {
   lightMapper.addDeadZone({ 23, 10, 38 });
   lightMapper.addDeadZone({ 24, 10, 38 });
   lightMapper.addDeadZone({ 25, 9, 38 });
+
+
+  // Pad each of the eight lines to 90 pixels
+  // First four lines are 76 pixels long
+  lightMapper.addPadding(76, 14);
+  lightMapper.addPadding(166, 14);
+  lightMapper.addPadding(256, 14);
+  lightMapper.addPadding(346, 14);
+  // Sixth is 86
+  lightMapper.addPadding(536, 4);
+  // Seventh is 69
+  lightMapper.addPadding(609, 21);
 }
 
 /**
@@ -79,10 +100,10 @@ int main(int argc, char ** argv) {
     strip[i] = { 0, 0, 0 };
   }
 
-  // Add deadzones
+  // Add deadzones and logical padding
   // This should mirror the "physical" strip construction
   // in index.html
-  addSpleenDeadzones();
+  addSpleenParameters();
 
   // initialize the frame buffer
   frameBuffer = new RGB*[WIDTH];
@@ -94,10 +115,13 @@ int main(int argc, char ** argv) {
   }
 
   // Push a few layers into the composition stack
-  engine.push(&testPattern);
-  // engine.push(&black);
+  // engine.push(&testPattern);
+  engine.push(&black);
   // engine.push(&spread);
-  // engine.push(&glitch);
+  engine.push(&ether);
+  engine.push(&dots);
+  engine.push(&splotches);
+  engine.push(&glitch);
 }
 
 /* =================================================

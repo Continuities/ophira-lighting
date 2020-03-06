@@ -66,7 +66,7 @@
       const progressElement = document.getElementById('progress');
 
       const FPS = 30;
-      const SHOW_INDEX = true;
+      const SHOW_INDEX = false;
 
       const SPLEEN_DEADZONES = {
         8: [ [ 23, 38 ] ],
@@ -88,6 +88,24 @@
         24: [ [ 10, 38 ] ],
         25: [ [ 9, 38 ] ]
       };
+
+      const SPLEEN_PADDING = [
+        // First four strips are only 76 pixels long
+        [ 76, 14 ], // Add 14 logical pixels after pixel 75 (0-indexed)
+        [ 166, 14 ],
+        [ 256, 14 ],
+        [ 346, 14 ],
+
+        // Fifth strip is the full 90
+        
+        // Sixth is 86
+        [ 536, 4 ],
+
+        // Seventh is 69
+        [ 609, 21 ]
+
+        // Eighth is 74
+      ];
 
       let width = 0;
       let height = 0;
@@ -139,17 +157,15 @@
       Module.onRuntimeInitialized = () => {
         width = _getWidth();
         height = _getHeight();
-        createPixels(width, height, SPLEEN_DEADZONES);
+        createPixels(width, height, SPLEEN_DEADZONES, SPLEEN_PADDING);
         setTimeout(animate, 0); // Needs to be delayed, or there's a memory access error?
       }
 
       function isInDeadZone(x, y, deadzones) {
-        console.log(deadzones[y]);
         if (!deadzones[y]) {
           return false;
         }
         for (let zone of deadzones[y]) {
-          console.log(zone);
           if (x >= zone[0] && x < zone[1]) {
             return true;
           }
@@ -157,10 +173,10 @@
         return false;
       }
 
-      function createPixels(width, height, deadzones) {
-        console.log(deadzones);
+      function createPixels(width, height, deadzones, logicalPadding) {
         const grid = document.getElementById('pixel-grid');
         stripLength = 0;
+        let padIndex = 0;
         for (let y = 0; y < height; y++) {
           const row = document.createElement('div');
           row.className='row';
@@ -173,10 +189,18 @@
             else {
               pixel.className = 'pixel';
               pixel.id = `p-${stripLength}`;
+              pixel.setAttribute('data-index', stripLength);
               if (SHOW_INDEX) {
                 pixel.innerText = stripLength;
               }
               stripLength++;
+
+              // Logical padding, because my strips aren't all the same length =(
+              if (logicalPadding.length > padIndex && logicalPadding[padIndex][0] == stripLength) {
+                stripLength += logicalPadding[padIndex][1];
+                padIndex++;
+              }
+
             }
             if (y % 2 > 0) {
               row.prepend(pixel);
@@ -192,14 +216,15 @@
       function animate() {
         setTimeout(animate, 1000 / FPS);
         _computeFrame();
-        for (let i = 0; i < stripLength; i++) {
-          const pixelColour = `#${_getPixel(i).toString(16).padStart(6, '0')}`;
-          document.getElementById(`p-${i}`).style.backgroundColor = pixelColour;
-        } 
+        document.querySelectorAll('.pixel').forEach(el => {
+          const index = parseInt(el.getAttribute('data-index'));
+          if (isNaN(index)) return;
+          const pixelColour = `#${_getPixel(index).toString(16).padStart(6, '0')}`;
+          el.style.backgroundColor = pixelColour;
+        });
       }
 
       document.addEventListener('keydown', e => {
-        console.log(e.keyCode);
         if (event.keyCode === 32) { // spacebar
           document.body.className = !document.body.className ? 'diffuse' : '';
         }

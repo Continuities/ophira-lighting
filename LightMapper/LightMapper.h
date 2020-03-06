@@ -14,11 +14,17 @@ typedef struct {
   int end; // non-inclusive
 } PixelRange;
 
+typedef struct {
+  int start; // inclusive
+  int number;
+} LogicalPadding;
+
 class LightMapper {
   private:
     int width;
     int height;
     std::vector<PixelRange> deadZones; 
+    std::vector<LogicalPadding> padding;
   public:
     LightMapper(int width, int height);
 
@@ -27,6 +33,9 @@ class LightMapper {
 
     // Adds a deadzone to the grid
     void addDeadZone(PixelRange range);
+
+    // Adds logical padding to the strip
+    void addPadding(int start, int number);
 };
 
 #endif 

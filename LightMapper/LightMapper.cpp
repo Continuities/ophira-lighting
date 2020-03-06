@@ -28,9 +28,21 @@ int LightMapper::getPixelIndex(int x, int y) {
       deadZoneModifier += lastIndex - firstIndex;
     }
   }
-  return withoutDeadZones - deadZoneModifier;
+  int finalIndex = withoutDeadZones - deadZoneModifier;
+
+  int padIndex = 0;
+  while (padIndex < padding.size() && finalIndex >= padding[padIndex].start) {
+    finalIndex += padding[padIndex].number;
+    padIndex++;
+  }
+
+  return finalIndex;
 }
 
 void LightMapper::addDeadZone(PixelRange range) {
   deadZones.push_back(range);
+}
+
+void LightMapper::addPadding(int start, int num) {
+  padding.push_back({ start, num });
 }
