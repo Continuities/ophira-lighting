@@ -9,8 +9,8 @@
  * in an Adruino sketch.
  * ================================================= */
 
-#define HEIGHT 8 // Height of the pixel grid
-#define WIDTH 12 // Width of the pixel grid
+#define HEIGHT 26 // Height of the pixel grid
+#define WIDTH 38 // Width of the pixel grid
 #define STRIP_LENGTH HEIGHT * WIDTH // number of pixels in the strip
 
 // Current Palette
@@ -39,6 +39,35 @@ Layers::Spread spread = Layers::Spread(WIDTH, HEIGHT, WIDTH / 2, HEIGHT / 2, 8, 
 
 LightMapper lightMapper = LightMapper(WIDTH, HEIGHT);
 
+// Wall-specific deadzone definitions
+void addSpleenDeadzones() {
+  lightMapper.addDeadZone({ 8, 23, 38 });
+  lightMapper.addDeadZone({ 9, 23, 38 });
+  lightMapper.addDeadZone({ 10, 22, 38 });
+  lightMapper.addDeadZone({ 11, 22, 38 });
+  lightMapper.addDeadZone({ 12, 22, 38 });
+  lightMapper.addDeadZone({ 13, 22, 38 });
+  lightMapper.addDeadZone({ 14, 21, 38 });
+  lightMapper.addDeadZone({ 15, 21, 38 });
+  lightMapper.addDeadZone({ 16, 12, 14 });
+  lightMapper.addDeadZone({ 16, 21, 38 });
+  lightMapper.addDeadZone({ 17, 11, 15 });
+  lightMapper.addDeadZone({ 17, 21, 38 });
+  lightMapper.addDeadZone({ 18, 11, 15 });
+  lightMapper.addDeadZone({ 18, 21, 38 });
+  lightMapper.addDeadZone({ 19, 11, 15 });
+  lightMapper.addDeadZone({ 19, 20, 38 });
+  lightMapper.addDeadZone({ 20, 11, 15 });
+  lightMapper.addDeadZone({ 20, 20, 38 });
+  lightMapper.addDeadZone({ 21, 10, 15 });
+  lightMapper.addDeadZone({ 21, 20, 38 });
+  lightMapper.addDeadZone({ 22, 10, 15 });
+  lightMapper.addDeadZone({ 22, 19, 38 });
+  lightMapper.addDeadZone({ 23, 10, 38 });
+  lightMapper.addDeadZone({ 24, 10, 38 });
+  lightMapper.addDeadZone({ 25, 9, 38 });
+}
+
 /**
  * Analogous to Arduino's setup() function
  * Configure the layer engine here.
@@ -53,14 +82,7 @@ int main(int argc, char ** argv) {
   // Add deadzones
   // This should mirror the "physical" strip construction
   // in index.html
-  lightMapper.addDeadZone({ 0, 1, 3 });
-  lightMapper.addDeadZone({ 0, 7, 9 });
-  lightMapper.addDeadZone({ 1, 1, 3 });
-  lightMapper.addDeadZone({ 1, 7, 9 });
-  lightMapper.addDeadZone({ 2, 1, 3 });
-  lightMapper.addDeadZone({ 2, 7, 9 });
-  lightMapper.addDeadZone({ 3, 1, 3 });
-  lightMapper.addDeadZone({ 3, 7, 9 });
+  addSpleenDeadzones();
 
   // initialize the frame buffer
   frameBuffer = new RGB*[WIDTH];
@@ -72,12 +94,11 @@ int main(int argc, char ** argv) {
   }
 
   // Push a few layers into the composition stack
-  // engine.push(&testPattern);
-  engine.push(&black);
-  engine.push(&spread);
-  engine.push(&glitch);
+  engine.push(&testPattern);
+  // engine.push(&black);
+  // engine.push(&spread);
+  // engine.push(&glitch);
 }
-
 
 /* =================================================
  * The stuff below allows for communication between

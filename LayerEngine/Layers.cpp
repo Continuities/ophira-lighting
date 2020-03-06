@@ -295,7 +295,7 @@ Layers::VerticalStripes::VerticalStripes(int width, int height, Palette palette)
 void Layers::VerticalStripes::apply(RGB** frame) {
   for (int x = 0; x < width; x++) {
     for (int y = 0; y < height; y++) {
-      switch (x % 4) {
+      switch (x % 3) {
         case 0:
           frame[x][y] = palette.background;
           break;
@@ -304,9 +304,6 @@ void Layers::VerticalStripes::apply(RGB** frame) {
           break;
         case 2:
           frame[x][y] = palette.accent;
-          break;
-        case 3:
-          frame[x][y] = palette.highlight;
           break;
       }
     }
@@ -317,7 +314,7 @@ Layers::HorizontalStripes::HorizontalStripes(int width, int height, Palette pale
 void Layers::HorizontalStripes::apply(RGB** frame) {
   for (int x = 0; x < width; x++) {
     for (int y = 0; y < height; y++) {
-      switch (y % 4) {
+      switch (y % 3) {
         case 0:
           frame[x][y] = palette.background;
           break;
@@ -326,9 +323,6 @@ void Layers::HorizontalStripes::apply(RGB** frame) {
           break;
         case 2:
           frame[x][y] = palette.accent;
-          break;
-        case 3:
-          frame[x][y] = palette.highlight;
           break;
       }
     }
