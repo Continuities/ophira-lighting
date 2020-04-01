@@ -5,6 +5,9 @@ This repository contains all the code used to build and develop the Ophira inter
 * `LayerEngine`
 
   CPP library for creating lighting patterns by layering effects
+* `LightMapper`
+
+  CPP library for mapping x/y coordinates to arrangements of LED strips
 * `Network`
 
   CPP library for communicating between lighting panels using BLE
