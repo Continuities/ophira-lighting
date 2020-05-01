@@ -2,16 +2,35 @@
 #include <LayerEngine.h>
 #include <LightMapper.h>
 
+/* =============================
+ *  Ophira Spleen Wall lighting
+ * =============================
+ */
+
 #define LED_PIN 6
 #define FPS 30
-#define WIDTH 6
-#define HEIGHT 8
-#define BRIGHTNESS 255 // 255
+#define HEIGHT 26 // Height of the pixel grid
+#define WIDTH 38 // Width of the pixel grid
+#define BRIGHTNESS 64 // 255
 #define GLITCH_MIN_TIME 10000 // ms
 #define GLITCH_MAX_TIME 60000 // ms
 #define GLITCH_MIN_DURATION 500 // ms
 #define GLITCH_MAX_DURATION 3000 // ms
+#define STRIP_LENGTH HEIGHT * WIDTH // number of pixels in the strip
 
+// Current Palette
+const Palette VEINS = {
+  { 0, 0, 0 }, // background
+  { 191, 0, 255 }, // foreground
+  { 0, 0, 0 }, // accent
+  { 86,100,39 }, // highlight
+};
+const Palette TEST_STRIPES = {
+  { 255, 0, 0 },
+  { 0, 255, 0 },
+  { 0, 0, 255 },
+  { 0, 0, 0}
+};
 const Palette XRAY = {
   { 8, 25, 53 }, // background
   { 156, 193, 238 }, // foreground
@@ -25,6 +44,7 @@ uint32_t lastFrame;
 RGB** frameBuffer;
 
 LayerEngine engine = LayerEngine(WIDTH, HEIGHT);
+Layers::VerticalStripes testPattern = Layers::VerticalStripes(WIDTH, HEIGHT, TEST_STRIPES);
 Layers::Black black = Layers::Black(WIDTH, HEIGHT, XRAY);
 Layers::Ether ether = Layers::Ether(WIDTH, HEIGHT, XRAY);
 Layers::Dots dots = Layers::Dots(WIDTH, HEIGHT, XRAY);
@@ -35,11 +55,54 @@ LightMapper lightMapper = LightMapper(WIDTH, HEIGHT);
 
 Adafruit_NeoPixel strip(WIDTH * HEIGHT, LED_PIN, NEO_BRG + NEO_KHZ800);
 
+// Wall-specific layout definitions
+void addSpleenParameters() {
+  lightMapper.addDeadZone({ 8, 23, 38 });
+  lightMapper.addDeadZone({ 9, 23, 38 });
+  lightMapper.addDeadZone({ 10, 22, 38 });
+  lightMapper.addDeadZone({ 11, 22, 38 });
+  lightMapper.addDeadZone({ 12, 22, 38 });
+  lightMapper.addDeadZone({ 13, 22, 38 });
+  lightMapper.addDeadZone({ 14, 21, 38 });
+  lightMapper.addDeadZone({ 15, 21, 38 });
+  lightMapper.addDeadZone({ 16, 12, 14 });
+  lightMapper.addDeadZone({ 16, 21, 38 });
+  lightMapper.addDeadZone({ 17, 11, 15 });
+  lightMapper.addDeadZone({ 17, 21, 38 });
+  lightMapper.addDeadZone({ 18, 11, 15 });
+  lightMapper.addDeadZone({ 18, 21, 38 });
+  lightMapper.addDeadZone({ 19, 11, 15 });
+  lightMapper.addDeadZone({ 19, 20, 38 });
+  lightMapper.addDeadZone({ 20, 11, 15 });
+  lightMapper.addDeadZone({ 20, 20, 38 });
+  lightMapper.addDeadZone({ 21, 10, 15 });
+  lightMapper.addDeadZone({ 21, 20, 38 });
+  lightMapper.addDeadZone({ 22, 10, 15 });
+  lightMapper.addDeadZone({ 22, 19, 38 });
+  lightMapper.addDeadZone({ 23, 10, 38 });
+  lightMapper.addDeadZone({ 24, 10, 38 });
+  lightMapper.addDeadZone({ 25, 9, 38 });
+
+
+  // Pad each of the eight lines to 90 pixels
+  // First four lines are 76 pixels long
+  lightMapper.addPadding(76, 14);
+  lightMapper.addPadding(166, 14);
+  lightMapper.addPadding(256, 14);
+  lightMapper.addPadding(346, 14);
+  // Sixth is 86
+  lightMapper.addPadding(536, 4);
+  // Seventh is 69
+  lightMapper.addPadding(609, 21);
+}
+
 void setup() {
   randomSeed(analogRead(0));
   strip.begin();
   strip.show();
   strip.setBrightness(BRIGHTNESS);
+
+  addSpleenParameters();
 
   Serial.begin(9600);
 //  while(!Serial) {}
@@ -53,11 +116,8 @@ void setup() {
   }
   
   lastFrame = millis();
-//  engine.push(&black);
   engine.push(&ether);
   engine.push(&dots);
-//  engine.push(&splotches);
-//  engine.push(&glitch);
 }
 
 void loop() {
@@ -87,7 +147,7 @@ void loop() {
       int index = lightMapper.getPixelIndex(x, y);
       if (index >= 0) {
         RGB colour = frameBuffer[x][y];
-        strip.setPixelColor(lightMapper.getPixelIndex(x, y), colour.r, colour.g, colour.b);
+        strip.setPixelColor(index, colour.r, colour.g, colour.b);
       }
     }
   }
