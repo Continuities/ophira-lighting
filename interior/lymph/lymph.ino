@@ -1,22 +1,26 @@
-#include <Adafruit_NeoPixel.h>
+#include <Adafruit_NeoPXL8.h>
 #include <LayerEngine.h>
 #include <LightMapper.h>
 
 /* =============================
- *  Ophira Spleen Wall lighting
+ *  Ophira Lymph Wall lighting
  * =============================
+ * Ethernet wire colour mapping:
+ *  1 - brown
+ *  2 - green
+ *  3 - blue
+ *  4 - orange
  */
 
-#define LED_PIN 6
 #define FPS 30
 #define HEIGHT 26 // Height of the pixel grid
 #define WIDTH 38 // Width of the pixel grid
-#define BRIGHTNESS 64 // 255
+#define STRIP_LENGTH 190 // length of each of the 8 physical led lines
+#define BRIGHTNESS 128 // 255
 #define GLITCH_MIN_TIME 10000 // ms
 #define GLITCH_MAX_TIME 60000 // ms
 #define GLITCH_MIN_DURATION 500 // ms
 #define GLITCH_MAX_DURATION 3000 // ms
-#define STRIP_LENGTH HEIGHT * WIDTH // number of pixels in the strip
 
 // Current Palette
 const Palette VEINS = {
@@ -45,15 +49,19 @@ RGB** frameBuffer;
 
 LayerEngine engine = LayerEngine(WIDTH, HEIGHT);
 Layers::VerticalStripes testPattern = Layers::VerticalStripes(WIDTH, HEIGHT, TEST_STRIPES);
+Layers::HorizontalStripes horizontal = Layers::HorizontalStripes(WIDTH, HEIGHT, TEST_STRIPES);
 Layers::Black black = Layers::Black(WIDTH, HEIGHT, XRAY);
+Layers::Background background = Layers::Background(WIDTH, HEIGHT, XRAY);
 Layers::Ether ether = Layers::Ether(WIDTH, HEIGHT, XRAY);
 Layers::Dots dots = Layers::Dots(WIDTH, HEIGHT, XRAY);
 Layers::Splotches splotches = Layers::Splotches(WIDTH, HEIGHT, XRAY);
 Layers::Glitch glitch = Layers::Glitch(WIDTH, HEIGHT, XRAY);
+Layers::StrandIdent strandIdent = Layers::StrandIdent(WIDTH, HEIGHT, TEST_STRIPES);
 
 LightMapper lightMapper = LightMapper(WIDTH, HEIGHT);
 
-Adafruit_NeoPixel strip(WIDTH * HEIGHT, LED_PIN, NEO_BRG + NEO_KHZ800);
+int8_t pins[8] = { PIN_SERIAL1_RX, PIN_SERIAL1_TX, 11, 13, 5, SDA, A4, A3 };
+Adafruit_NeoPXL8 strip(STRIP_LENGTH, pins, NEO_BRG);
 
 // Wall-specific layout definitions
 void addSpleenParameters() {
@@ -80,7 +88,7 @@ void addSpleenParameters() {
   lightMapper.addDeadZone({ 22, 10, 15 });
   lightMapper.addDeadZone({ 22, 19, 38 });
   lightMapper.addDeadZone({ 23, 10, 38 });
-  lightMapper.addDeadZone({ 24, 10, 38 });
+  lightMapper.addDeadZone({ 24, 9, 38 });
   lightMapper.addDeadZone({ 25, 9, 38 });
 
 
@@ -97,15 +105,13 @@ void addSpleenParameters() {
 }
 
 void setup() {
+  Serial.begin(9600);
   randomSeed(analogRead(0));
   strip.begin();
   strip.show();
   strip.setBrightness(BRIGHTNESS);
 
   addSpleenParameters();
-
-  Serial.begin(9600);
-//  while(!Serial) {}
   
   frameBuffer = new RGB*[WIDTH];
   for (int x = 0; x < WIDTH; x++) {
@@ -116,15 +122,19 @@ void setup() {
   }
   
   lastFrame = millis();
+//  engine.push(&black);
+//  engine.push(&background);
+//  engine.push(&testPattern);
   engine.push(&ether);
-  engine.push(&dots);
+//  engine.push(&dots);
+  engine.push(&splotches);
 }
 
 void loop() {
   if (millis() - lastFrame < 1000 / FPS) {
     return;
   }
-  Serial.println(1000 / (millis() - lastFrame)); // Log FPS
+  Serial.print("FPS: "); Serial.println(1000 / (millis() - lastFrame)); // Log FPS
   lastFrame = millis();
 
   if (nextGlitch > 0 && nextGlitch <= lastFrame) {
@@ -151,5 +161,6 @@ void loop() {
       }
     }
   }
+  
   strip.show();
 }

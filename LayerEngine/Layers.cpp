@@ -2,6 +2,7 @@
 #include "stdio.h"
 #include "math.h"
 #include "LayerEngine.h"
+#include "Arduino.h"
 
 #define PI 3.1415926535897932384626433832795
 
@@ -48,8 +49,8 @@ RGB blend(RGB first, RGB second, double amount) {
   };
 }
 
-uint8_t variate(uint8_t value, double amount) {
-  int delta = value * amount;
+uint8_t variate(uint8_t value, uint8_t portion) {
+  uint8_t delta = value / portion;
   if (value + delta > 255) {
     return 255;
   }
@@ -64,6 +65,15 @@ void Layers::Black::apply(RGB** frame) {
   for (int x = 0; x < this->width; x++) {
     for (int y = 0; y < this->height; y++) {
       frame[x][y] = { 0, 0, 0 };
+    }
+  }
+}
+
+Layers::Background::Background(int width, int height, Palette palette) : VisualLayer(width, height, palette) {}
+void Layers::Background::apply(RGB** frame) {
+  for (int x = 0; x < this->width; x++) {
+    for (int y = 0; y < this->height; y++) {
+      frame[x][y] = palette.background;
     }
   }
 }
@@ -103,10 +113,15 @@ void Layers::Ether::apply(RGB** frame) {
     for (int y = 0; y < this->height; y++) {
       double yShift = sin((2 * PI * y) / (this->height - 1));
       double pixelVariance = (xShift * variance * xVariance) + (yShift * variance * yVariance);
+      int portion = 0;
+      if (pixelVariance > 0.001 || pixelVariance < -0.001) {
+        portion = 1/pixelVariance;
+      }
+      // Serial.print(pixelVariance); Serial.print(" : "); Serial.println(portion);
       frame[x][y] = {
-        variate(palette.background.r, pixelVariance),
-        variate(palette.background.g, pixelVariance),
-        variate(palette.background.b, pixelVariance)
+        variate(palette.background.r, portion),
+        variate(palette.background.g, portion),
+        variate(palette.background.b, portion)
       };
     }
   }
@@ -156,9 +171,9 @@ void Layers::Dots::apply(RGB** frame) {
 
 Layers::Splotches::Splotches(int width, int height, Palette palette): VisualLayer(width, height, palette) {}
 void Layers::Splotches::apply(RGB** frame) {
-  int DESIRED_SPLOTCHES = 3;
+  int DESIRED_SPLOTCHES = 6;
   double SPLOTCH_VELOCITY = 0.02;
-  int CORNER_FADE = 4;
+  int CORNER_FADE = 10;
   int numActive = 0;
 
   // Draw existing splotches
@@ -324,6 +339,20 @@ void Layers::HorizontalStripes::apply(RGB** frame) {
         case 2:
           frame[x][y] = palette.accent;
           break;
+      }
+    }
+  }
+}
+
+Layers::StrandIdent::StrandIdent(int width, int height, Palette palette): VisualLayer(width, height, palette) {}
+void Layers::StrandIdent::apply(RGB** frame) {
+  for (int x = 0; x < width; x++) {
+    for (int y = 0; y < height; y++) {
+      if (x <= y) {
+        frame[x][y] = palette.background;
+      }
+      else {
+        frame[x][y] = palette.foreground;
       }
     }
   }

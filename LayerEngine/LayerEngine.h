@@ -48,6 +48,13 @@ namespace Layers {
       void apply(RGB** frame);
   };
 
+  // Static background
+  class Background: public VisualLayer {
+    public:
+      Background(int width, int height, Palette palette);
+      void apply(RGB** frame);
+  };
+
   // Warbly background
   class Ether: public VisualLayer {
     private:
@@ -111,6 +118,13 @@ namespace Layers {
   class HorizontalStripes: public VisualLayer {
     public:
       HorizontalStripes(int width, int height, Palette palette);
+      void apply(RGB** frame);
+  };
+
+  // Strand number pattern to help put leds in order
+  class StrandIdent: public VisualLayer {
+    public:
+      StrandIdent(int width, int height, Palette palette);
       void apply(RGB** frame);
   };
 
