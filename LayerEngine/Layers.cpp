@@ -2,7 +2,6 @@
 #include "stdio.h"
 #include "math.h"
 #include "LayerEngine.h"
-#include "Arduino.h"
 
 #define PI 3.1415926535897932384626433832795
 
@@ -49,8 +48,8 @@ RGB blend(RGB first, RGB second, double amount) {
   };
 }
 
-uint8_t variate(uint8_t value, uint8_t portion) {
-  uint8_t delta = value / portion;
+uint8_t variate(uint8_t value, double amount) {
+  int delta = value * amount;
   if (value + delta > 255) {
     return 255;
   }
@@ -113,15 +112,10 @@ void Layers::Ether::apply(RGB** frame) {
     for (int y = 0; y < this->height; y++) {
       double yShift = sin((2 * PI * y) / (this->height - 1));
       double pixelVariance = (xShift * variance * xVariance) + (yShift * variance * yVariance);
-      int portion = 0;
-      if (pixelVariance > 0.001 || pixelVariance < -0.001) {
-        portion = 1/pixelVariance;
-      }
-      // Serial.print(pixelVariance); Serial.print(" : "); Serial.println(portion);
       frame[x][y] = {
-        variate(palette.background.r, portion),
-        variate(palette.background.g, portion),
-        variate(palette.background.b, portion)
+        variate(palette.background.r, pixelVariance),
+        variate(palette.background.g, pixelVariance),
+        variate(palette.background.b, pixelVariance)
       };
     }
   }

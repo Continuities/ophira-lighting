@@ -116,12 +116,12 @@ int main(int argc, char ** argv) {
 
   // Push a few layers into the composition stack
   // engine.push(&testPattern);
-  engine.push(&black);
+  // engine.push(&black);
   // engine.push(&spread);
   engine.push(&ether);
-  engine.push(&dots);
-  engine.push(&splotches);
-  engine.push(&glitch);
+  // engine.push(&dots);
+  // engine.push(&splotches);
+  // engine.push(&glitch);
 }
 
 /* =================================================

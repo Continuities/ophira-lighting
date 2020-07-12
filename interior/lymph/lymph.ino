@@ -13,9 +13,9 @@
  */
 
 #define FPS 30
-#define HEIGHT 26 // Height of the pixel grid
-#define WIDTH 38 // Width of the pixel grid
-#define STRIP_LENGTH 190 // length of each of the 8 physical led lines
+#define HEIGHT 10 // Height of the pixel grid
+#define WIDTH 10 // Width of the pixel grid
+#define STRIP_LENGTH 241 // length of each of the 8 physical led lines
 #define BRIGHTNESS 128 // 255
 #define GLITCH_MIN_TIME 10000 // ms
 #define GLITCH_MAX_TIME 60000 // ms
