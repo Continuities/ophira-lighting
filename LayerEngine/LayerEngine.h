@@ -101,7 +101,7 @@ namespace Layers {
       int cX;
       int cY;
       int clip;
-      float shift;
+      int shift;
     public:
       Spread(int width, int height, int centerX, int centerY, int clipDistance, Palette palette);
       void apply(RGB** frame); 

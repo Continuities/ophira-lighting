@@ -40,11 +40,29 @@ float wrapPercent(float in) {
   return in;
 }
 
+int wrapIntPercent(int in) {
+  while (in < 0) {
+    in += 100;
+  }
+  if (in > 100) {
+    in %= 100;
+  }
+  return in;
+}
+
 RGB blend(RGB first, RGB second, double amount) {
   return {
     clampToByte(first.r * (1.0 - amount) + (second.r * amount)),
     clampToByte(first.g * (1.0 - amount) + (second.g * amount)),
     clampToByte(first.b * (1.0 - amount) + (second.b * amount))
+  };
+}
+
+RGB fastBlend(RGB first, RGB second, int percent /* [0, 100] */) {
+  return {
+    clampToByte((first.r * (100 - percent) + second.r * percent) / 100),
+    clampToByte((first.g * (100 - percent) + second.g * percent) / 100),
+    clampToByte((first.b * (100 - percent) + second.b * percent) / 100)
   };
 }
 
@@ -286,15 +304,15 @@ Layers::Spread::Spread(int width, int height, int centerX, int centerY, int clip
   clip = clipDistance;
 }
 void Layers::Spread::apply(RGB** frame) {
-  shift = wrapPercent(shift + 0.03);
+  shift = wrapIntPercent(shift - 3);
   for (int x = 0; x < width; x++) {
     for (int y = 0; y < height; y++) {
-      float deltaX = x - cX;
-      float deltaY = y - cY;
-      float dist = sqrt(pow(deltaX, 2) + pow(deltaY, 2));
-      if (dist < clip) {
-        float offset = wrapPercent(1 - (dist / clip) + shift);
-        frame[x][y] = blend(frame[x][y], palette.foreground, offset);
+      int deltaX = x - cX;
+      int deltaY = y - cY;
+      int dist = sqrt((deltaX * deltaX) + (deltaY * deltaY)) * 100;
+      if (dist < clip * 100) {
+        int offset = wrapIntPercent(dist / clip + shift);
+        frame[x][y] = fastBlend(frame[x][y], palette.foreground, offset);
       }
     }
   }
