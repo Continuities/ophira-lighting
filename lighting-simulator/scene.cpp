@@ -58,13 +58,9 @@ void addSpleenParameters() {
   lightMapper.addDeadZone({ 13, 22, 38 });
   lightMapper.addDeadZone({ 14, 21, 38 });
   lightMapper.addDeadZone({ 15, 21, 38 });
-  lightMapper.addDeadZone({ 16, 12, 14 });
   lightMapper.addDeadZone({ 16, 21, 38 });
-  lightMapper.addDeadZone({ 17, 11, 15 });
   lightMapper.addDeadZone({ 17, 21, 38 });
-  lightMapper.addDeadZone({ 18, 11, 15 });
   lightMapper.addDeadZone({ 18, 21, 38 });
-  lightMapper.addDeadZone({ 19, 11, 15 });
   lightMapper.addDeadZone({ 19, 20, 38 });
   lightMapper.addDeadZone({ 20, 11, 15 });
   lightMapper.addDeadZone({ 20, 20, 38 });
@@ -85,8 +81,8 @@ void addSpleenParameters() {
   lightMapper.addPadding(346, 14);
   // Sixth is 86
   lightMapper.addPadding(536, 4);
-  // Seventh is 69
-  lightMapper.addPadding(609, 21);
+  // Seventh is 83
+  lightMapper.addPadding(609, 7);
 }
 
 /**
@@ -115,13 +111,13 @@ int main(int argc, char ** argv) {
   }
 
   // Push a few layers into the composition stack
-  // engine.push(&testPattern);
-  engine.push(&black);
+  engine.push(&testPattern);
+  // engine.push(&black);
   // engine.push(&spread);
-  engine.push(&ether);
-  engine.push(&dots);
-  engine.push(&splotches);
-  engine.push(&glitch);
+  // engine.push(&ether);
+  // engine.push(&dots);
+  // engine.push(&splotches);
+  // engine.push(&glitch);
 }
 
 /* =================================================

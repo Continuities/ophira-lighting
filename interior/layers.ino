@@ -1,3 +1,0 @@
-class Ether: public VisualLayer {
-  
-};
