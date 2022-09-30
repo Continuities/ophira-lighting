@@ -2,7 +2,7 @@
 #include <LayerEngine.h>
 #include <LightMapper.h>
 
-#define LED_PIN 6
+#define LED_PIN 12
 #define FPS 30
 #define WIDTH 6
 #define HEIGHT 8

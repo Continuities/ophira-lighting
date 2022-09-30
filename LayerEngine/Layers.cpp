@@ -59,6 +59,18 @@ uint8_t variate(uint8_t value, double amount) {
   return value + delta;
 }
 
+Layers::Mask::Mask(int x, int y, int width, int height, Palette palette) : VisualLayer(width, height, palette) {
+  this->x = x;
+  this->y = y;
+}
+void Layers::Mask::apply(RGB** frame) {
+  for (int xx = this->x; xx < this->width + this->x; xx++) {
+    for (int yy = this->y; yy < this->height + this->y; yy++) {
+      frame[xx][yy] = { 0, 0, 0 };
+    }
+  }
+}
+
 Layers::Black::Black(int width, int height, Palette palette) : VisualLayer(width, height, palette) {}
 void Layers::Black::apply(RGB** frame) {
   for (int x = 0; x < this->width; x++) {

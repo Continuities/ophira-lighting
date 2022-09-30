@@ -88,6 +88,16 @@ namespace Layers {
       void apply(RGB** frame);
   };
 
+  // Positionable black square
+  class Mask: public VisualLayer {
+    private:
+      int x;
+      int y;
+    public:
+      Mask(int x, int y, int width, int height, Palette palette);
+      void apply(RGB** frame);
+  };
+
   // Pulsing colour that spreads from a central point
   class Spread: public VisualLayer {
     private:

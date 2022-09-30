@@ -10,7 +10,7 @@
  * ================================================= */
 
 #define HEIGHT 25 // Height of the pixel grid
-#define WIDTH 10 // Width of the pixel grid
+#define WIDTH 11 // Width of the pixel grid
 #define STRIP_LENGTH HEIGHT * WIDTH // number of pixels in the strip
 
 // Current Palette
@@ -41,56 +41,51 @@ LayerEngine engine = LayerEngine(WIDTH, HEIGHT);
 Layers::VerticalStripes testPattern = Layers::VerticalStripes(WIDTH, HEIGHT, TEST_STRIPES);
 Layers::Black black = Layers::Black(WIDTH, HEIGHT, VEINS);
 Layers::Glitch glitch = Layers::Glitch(WIDTH, HEIGHT, XRAY);
+Layers::Spread spread = Layers::Spread(WIDTH, HEIGHT, 0, 7, 19, VEINS);
 Layers::Ether ether = Layers::Ether(WIDTH, HEIGHT, XRAY);
 Layers::Dots dots = Layers::Dots(WIDTH, HEIGHT, XRAY);
 Layers::Splotches splotches = Layers::Splotches(WIDTH, HEIGHT, XRAY);
-
-
-Layers::Spread spread = Layers::Spread(WIDTH, HEIGHT, 0, 0, 25, VEINS);
-Layers::Mask mask = Layers::Mask(7, 2, 3, 9, VEINS);
-Layers::Spread spread2 = Layers::Spread(WIDTH, HEIGHT, 10, 6, 5, VEINS);
 
 LightMapper lightMapper = LightMapper(WIDTH, HEIGHT);
 
 // Wall-specific layout definitions
 void addPanelParameters() {
-  lightMapper.addDeadZone({ 0, 2, 10 });
-  lightMapper.addDeadZone({ 1, 2, 10 });
-  lightMapper.addDeadZone({ 2, 2, 8 });
-  lightMapper.addDeadZone({ 2, 9, 10 });
-  lightMapper.addDeadZone({ 3, 2, 8 });
-  lightMapper.addDeadZone({ 3, 9, 10 });
-  lightMapper.addDeadZone({ 4, 5, 8 });
-  lightMapper.addDeadZone({ 5, 5, 8 });
-  lightMapper.addDeadZone({ 6, 5, 7 });
-  lightMapper.addDeadZone({ 7, 5, 7 });
-  lightMapper.addDeadZone({ 8, 5, 7 });
-  lightMapper.addDeadZone({ 9, 0, 1 });
-  lightMapper.addDeadZone({ 9, 5, 7 });
-  lightMapper.addDeadZone({ 10, 0, 1 });
-  lightMapper.addDeadZone({ 10, 5, 7 });
-  lightMapper.addDeadZone({ 10, 9, 10 });
-  lightMapper.addDeadZone({ 11, 0, 1 });
-  lightMapper.addDeadZone({ 11, 5, 10 });
-  lightMapper.addDeadZone({ 12, 0, 1 });
-  lightMapper.addDeadZone({ 12, 5, 10 });
-  lightMapper.addDeadZone({ 13, 4, 10 });
-  lightMapper.addDeadZone({ 14, 4, 10 });
-  lightMapper.addDeadZone({ 15, 7, 10 });
-  lightMapper.addDeadZone({ 16, 7, 10 });
-  lightMapper.addDeadZone({ 17, 7, 10 });
-  lightMapper.addDeadZone({ 18, 7, 10 });
-  lightMapper.addDeadZone({ 19, 7, 10 });
-  lightMapper.addDeadZone({ 20, 0, 2 });
-  lightMapper.addDeadZone({ 20, 8, 10 });
-  lightMapper.addDeadZone({ 21, 0, 3 });
-  lightMapper.addDeadZone({ 21, 8, 10 });
+  lightMapper.addDeadZone({ 0, 0, 1 });
+  lightMapper.addDeadZone({ 0, 3, 11 });
+  lightMapper.addDeadZone({ 1, 0, 1 });
+  lightMapper.addDeadZone({ 1, 3, 11 });
+  lightMapper.addDeadZone({ 2, 0, 1 });
+  lightMapper.addDeadZone({ 2, 8, 11 });
+  lightMapper.addDeadZone({ 3, 0, 1 });
+  lightMapper.addDeadZone({ 3, 8, 11 });
+  lightMapper.addDeadZone({ 4, 0, 1 });
+  lightMapper.addDeadZone({ 4, 7, 11 });
+  lightMapper.addDeadZone({ 5, 7, 11 });
+  lightMapper.addDeadZone({ 6, 7, 11 });
+  lightMapper.addDeadZone({ 7, 8, 11 });
+  lightMapper.addDeadZone({ 8, 8, 11 });
+  lightMapper.addDeadZone({ 9, 8, 11 });
+  lightMapper.addDeadZone({ 10, 9, 11 });
+  lightMapper.addDeadZone({ 12, 0, 2 });
+  lightMapper.addDeadZone({ 13, 0, 2 });
+  lightMapper.addDeadZone({ 14, 0, 1 });
+  lightMapper.addDeadZone({ 15, 0, 1 });
+  lightMapper.addDeadZone({ 16, 0, 1 });
+  lightMapper.addDeadZone({ 17, 0, 1 });
+  lightMapper.addDeadZone({ 18, 0, 1 });
+  lightMapper.addDeadZone({ 18, 8, 11 });
+  lightMapper.addDeadZone({ 19, 0, 1 });
+  lightMapper.addDeadZone({ 19, 8, 11 });
+  lightMapper.addDeadZone({ 20, 0, 1 });
+  lightMapper.addDeadZone({ 20, 8, 11 });
+  lightMapper.addDeadZone({ 21, 0, 2 });
+  lightMapper.addDeadZone({ 21, 8, 11 });
   lightMapper.addDeadZone({ 22, 0, 3 });
-  lightMapper.addDeadZone({ 22, 8, 10 });
-  lightMapper.addDeadZone({ 23, 0, 4 });
-  lightMapper.addDeadZone({ 23, 8, 10 });
-  lightMapper.addDeadZone({ 24, 0, 4 });
-  lightMapper.addDeadZone({ 24, 8, 10 });
+  lightMapper.addDeadZone({ 22, 8, 11 });
+  lightMapper.addDeadZone({ 23, 0, 6 });
+  lightMapper.addDeadZone({ 23, 8, 11 });
+  lightMapper.addDeadZone({ 24, 0, 6 });
+  lightMapper.addDeadZone({ 24, 8, 11 });
 }
 
 /**
@@ -119,11 +114,9 @@ int main(int argc, char ** argv) {
   }
 
   // Push a few layers into the composition stack
-  engine.push(&black);
   // engine.push(&testPattern);
+  engine.push(&black);
   engine.push(&spread);
-  engine.push(&mask);
-  engine.push(&spread2);
   // engine.push(&ether);
   // engine.push(&dots);
   // engine.push(&splotches);
