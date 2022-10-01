@@ -2,9 +2,9 @@
 #include <LayerEngine.h>
 #include <LightMapper.h>
 
-#define PANEL1_PIN 6
-#define PANEL2_PIN 12
-#define FPS 30
+#define PANEL1_PIN 12
+#define PANEL2_PIN 6
+#define FPS 60
 
 #define PANEL1_WIDTH 11
 #define PANEL1_HEIGHT 25
@@ -12,13 +12,20 @@
 #define PANEL2_HEIGHT 25
 
 
-#define BRIGHTNESS 128
+#define BRIGHTNESS 255
 
 const Palette VEINS = {
   { 0, 0, 0 }, // background
   { 191, 0, 255 }, // foreground
   { 0, 0, 0 }, // accent
   { 86,100,39 }, // highlight
+};
+
+const Palette TEST_STRIPES = {
+  { 255, 0, 0 },
+  { 0, 255, 0 },
+  { 0, 0, 255 },
+  { 0, 0, 0}
 };
 
 uint32_t lastFrame;
@@ -31,10 +38,11 @@ LayerEngine engine1 = LayerEngine(PANEL1_WIDTH, PANEL1_HEIGHT);
 LayerEngine engine2 = LayerEngine(PANEL2_WIDTH, PANEL2_HEIGHT);
 
 Layers::Black black1 = Layers::Black(PANEL1_WIDTH, PANEL1_HEIGHT, VEINS);
-Layers::Spread spread1 = Layers::Spread(PANEL1_WIDTH, PANEL1_HEIGHT, 1, 1, 5, VEINS);
+Layers::VerticalStripes test1 = Layers::VerticalStripes(PANEL1_WIDTH, PANEL1_HEIGHT, TEST_STRIPES);
+Layers::Spread spread1 = Layers::Spread(PANEL1_WIDTH, PANEL1_HEIGHT, 0, 7, 19, VEINS);
 
 Layers::Black black2 = Layers::Black(PANEL2_WIDTH, PANEL2_HEIGHT, VEINS);
-Layers::Spread spread2a = Layers::Spread(PANEL2_WIDTH, PANEL2_HEIGHT, 0, 0, 25, VEINS);
+Layers::Spread spread2a = Layers::Spread(PANEL2_WIDTH, PANEL2_HEIGHT, 2, 13, 13, VEINS);
 Layers::Spread spread2b = Layers::Spread(PANEL2_WIDTH, PANEL2_HEIGHT, 10, 6, 5, VEINS);
 Layers::Mask mask = Layers::Mask(7, 2, 3, 9, VEINS);
 
@@ -121,6 +129,10 @@ void addPanel2Parameters() {
 }
 
 void setup() {
+
+  addPanel1Parameters();
+  addPanel2Parameters();
+  
   strip1.begin();
   strip1.show();
   strip1.setBrightness(BRIGHTNESS);
@@ -132,6 +144,7 @@ void setup() {
     }
   }
   engine1.push(&black1);
+//  engine1.push(&test1);
   engine1.push(&spread1);
 
   strip2.begin();
@@ -161,8 +174,6 @@ void loop() {
   lastFrame = millis();
   
   engine1.computeFrame(frameBuffer1);
-  engine2.computeFrame(frameBuffer2);
-  
   for (int x = 0; x < PANEL1_WIDTH; x++) {
     for (int y = 0; y < PANEL1_HEIGHT; y++) {
       int index = lightMapper_1.getPixelIndex(x, y);
@@ -172,6 +183,8 @@ void loop() {
       }
     }
   }
+
+  engine2.computeFrame(frameBuffer2);
   for (int x = 0; x < PANEL2_WIDTH; x++) {
     for (int y = 0; y < PANEL2_HEIGHT; y++) {
       int index = lightMapper_2.getPixelIndex(x, y);

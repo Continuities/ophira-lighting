@@ -9,8 +9,8 @@
  * in an Adruino sketch.
  * ================================================= */
 
-#define HEIGHT 26 // Height of the pixel grid
-#define WIDTH 38 // Width of the pixel grid
+#define HEIGHT 25 // Height of the pixel grid
+#define WIDTH 10 // Width of the pixel grid
 #define STRIP_LENGTH HEIGHT * WIDTH // number of pixels in the strip
 
 // Current Palette
@@ -41,48 +41,56 @@ LayerEngine engine = LayerEngine(WIDTH, HEIGHT);
 Layers::VerticalStripes testPattern = Layers::VerticalStripes(WIDTH, HEIGHT, TEST_STRIPES);
 Layers::Black black = Layers::Black(WIDTH, HEIGHT, VEINS);
 Layers::Glitch glitch = Layers::Glitch(WIDTH, HEIGHT, XRAY);
-Layers::Spread spread = Layers::Spread(WIDTH, HEIGHT, WIDTH / 2, HEIGHT / 2, 8, VEINS);
 Layers::Ether ether = Layers::Ether(WIDTH, HEIGHT, XRAY);
 Layers::Dots dots = Layers::Dots(WIDTH, HEIGHT, XRAY);
 Layers::Splotches splotches = Layers::Splotches(WIDTH, HEIGHT, XRAY);
 
+
+Layers::Spread spread = Layers::Spread(WIDTH, HEIGHT, 2, 13, 14, VEINS);
+Layers::Mask mask = Layers::Mask(7, 2, 3, 9, VEINS);
+Layers::Spread spread2 = Layers::Spread(WIDTH, HEIGHT, 10, 6, 5, VEINS);
+
 LightMapper lightMapper = LightMapper(WIDTH, HEIGHT);
 
 // Wall-specific layout definitions
-void addSpleenParameters() {
-  lightMapper.addDeadZone({ 8, 23, 38 });
-  lightMapper.addDeadZone({ 9, 23, 38 });
-  lightMapper.addDeadZone({ 10, 22, 38 });
-  lightMapper.addDeadZone({ 11, 22, 38 });
-  lightMapper.addDeadZone({ 12, 22, 38 });
-  lightMapper.addDeadZone({ 13, 22, 38 });
-  lightMapper.addDeadZone({ 14, 21, 38 });
-  lightMapper.addDeadZone({ 15, 21, 38 });
-  lightMapper.addDeadZone({ 16, 21, 38 });
-  lightMapper.addDeadZone({ 17, 21, 38 });
-  lightMapper.addDeadZone({ 18, 21, 38 });
-  lightMapper.addDeadZone({ 19, 20, 38 });
-  lightMapper.addDeadZone({ 20, 11, 15 });
-  lightMapper.addDeadZone({ 20, 20, 38 });
-  lightMapper.addDeadZone({ 21, 10, 15 });
-  lightMapper.addDeadZone({ 21, 20, 38 });
-  lightMapper.addDeadZone({ 22, 10, 15 });
-  lightMapper.addDeadZone({ 22, 19, 38 });
-  lightMapper.addDeadZone({ 23, 10, 38 });
-  lightMapper.addDeadZone({ 24, 10, 38 });
-  lightMapper.addDeadZone({ 25, 9, 38 });
-
-
-  // Pad each of the eight lines to 90 pixels
-  // First four lines are 76 pixels long
-  lightMapper.addPadding(76, 14);
-  lightMapper.addPadding(166, 14);
-  lightMapper.addPadding(256, 14);
-  lightMapper.addPadding(346, 14);
-  // Sixth is 86
-  lightMapper.addPadding(536, 4);
-  // Seventh is 83
-  lightMapper.addPadding(609, 7);
+void addPanelParameters() {
+  lightMapper.addDeadZone({ 0, 2, 10 });
+  lightMapper.addDeadZone({ 1, 2, 10 });
+  lightMapper.addDeadZone({ 2, 2, 8 });
+  lightMapper.addDeadZone({ 2, 9, 10 });
+  lightMapper.addDeadZone({ 3, 2, 8 });
+  lightMapper.addDeadZone({ 3, 9, 10 });
+  lightMapper.addDeadZone({ 4, 5, 8 });
+  lightMapper.addDeadZone({ 5, 5, 8 });
+  lightMapper.addDeadZone({ 6, 5, 7 });
+  lightMapper.addDeadZone({ 7, 5, 7 });
+  lightMapper.addDeadZone({ 8, 5, 7 });
+  lightMapper.addDeadZone({ 9, 0, 1 });
+  lightMapper.addDeadZone({ 9, 5, 7 });
+  lightMapper.addDeadZone({ 10, 0, 1 });
+  lightMapper.addDeadZone({ 10, 5, 7 });
+  lightMapper.addDeadZone({ 10, 9, 10 });
+  lightMapper.addDeadZone({ 11, 0, 1 });
+  lightMapper.addDeadZone({ 11, 5, 10 });
+  lightMapper.addDeadZone({ 12, 0, 1 });
+  lightMapper.addDeadZone({ 12, 5, 10 });
+  lightMapper.addDeadZone({ 13, 4, 10 });
+  lightMapper.addDeadZone({ 14, 4, 10 });
+  lightMapper.addDeadZone({ 15, 7, 10 });
+  lightMapper.addDeadZone({ 16, 7, 10 });
+  lightMapper.addDeadZone({ 17, 7, 10 });
+  lightMapper.addDeadZone({ 18, 7, 10 });
+  lightMapper.addDeadZone({ 19, 7, 10 });
+  lightMapper.addDeadZone({ 20, 0, 2 });
+  lightMapper.addDeadZone({ 20, 8, 10 });
+  lightMapper.addDeadZone({ 21, 0, 3 });
+  lightMapper.addDeadZone({ 21, 8, 10 });
+  lightMapper.addDeadZone({ 22, 0, 3 });
+  lightMapper.addDeadZone({ 22, 8, 10 });
+  lightMapper.addDeadZone({ 23, 0, 4 });
+  lightMapper.addDeadZone({ 23, 8, 10 });
+  lightMapper.addDeadZone({ 24, 0, 4 });
+  lightMapper.addDeadZone({ 24, 8, 10 });
 }
 
 /**
@@ -99,7 +107,7 @@ int main(int argc, char ** argv) {
   // Add deadzones and logical padding
   // This should mirror the "physical" strip construction
   // in index.html
-  addSpleenParameters();
+  addPanelParameters();
 
   // initialize the frame buffer
   frameBuffer = new RGB*[WIDTH];
@@ -111,13 +119,15 @@ int main(int argc, char ** argv) {
   }
 
   // Push a few layers into the composition stack
+  engine.push(&black);
   // engine.push(&testPattern);
-  // engine.push(&black);
-  // engine.push(&spread);
-  engine.push(&ether);
-  engine.push(&dots);
-  engine.push(&splotches);
-  engine.push(&glitch);
+  engine.push(&spread);
+  engine.push(&mask);
+  engine.push(&spread2);
+  // engine.push(&ether);
+  // engine.push(&dots);
+  // engine.push(&splotches);
+  // engine.push(&glitch);
 }
 
 /* =================================================

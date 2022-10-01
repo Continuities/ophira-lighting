@@ -109,7 +109,7 @@ void Layers::Ether::apply(RGB** frame) {
     ySpeed *= -1;
     yVariance = 0;
   }
-  double variance = 0.3;
+  double variance = 0.7;
   for (int x = 0; x < this->width; x++) {
     double xShift = sin((2 * PI * x) / (this->width - 1));
     for (int y = 0; y < this->height; y++) {
