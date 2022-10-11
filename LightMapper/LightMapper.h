@@ -23,10 +23,12 @@ class LightMapper {
   private:
     int width;
     int height;
+    const int* stripDefinition;
     std::vector<PixelRange> deadZones; 
     std::vector<LogicalPadding> padding;
   public:
     LightMapper(int width, int height);
+    LightMapper(int width, int height, const int stripDefinition[8]);
 
     // Returns -1 if the pixel is in a deadzone
     int getPixelIndex(int x, int y);

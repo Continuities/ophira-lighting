@@ -1,23 +1,41 @@
 #include "LightMapper.h"
 #include <vector>
 
-int indexWithoutDeadZones(int x, int y, int width) {
-  if (y % 2 == 0) {
+bool isRowReversed(int rowIndex, const int* strips) {
+  if (strips == NULL) {
+    return rowIndex % 2 == 0;
+  }
+  int r = rowIndex;
+  for (int i = 0; i < 8; i++) {
+    if (r < strips[i]) {
+      break;
+    }
+    r -= strips[i];
+  }
+  return r % 2 > 0;
+}
+
+int indexWithoutDeadZones(int x, int y, int width, const int* strips) {
+  if (!isRowReversed(y, strips)) {
     return (y * width) + x;
   }
   return ((y + 1) * width) - 1 - x;
 }
 
-LightMapper::LightMapper(int w, int h): width(w), height(h), deadZones() {
+LightMapper::LightMapper(int w, int h): width(w), height(h), deadZones(), stripDefinition(NULL) {
   // Empty for now
 }
 
+LightMapper::LightMapper(int w, int h, const int* def): width(w), height(h), deadZones(), stripDefinition(def) {
+  // Empty
+}
+
 int LightMapper::getPixelIndex(int x, int y) {
-  int withoutDeadZones = indexWithoutDeadZones(x, y, width);
+  int withoutDeadZones = indexWithoutDeadZones(x, y, width, stripDefinition);
   int deadZoneModifier = 0;
   for (PixelRange range : deadZones) {
-    int start = indexWithoutDeadZones(range.start, range.row, width);
-    int end = indexWithoutDeadZones(range.end, range.row, width);
+    int start = indexWithoutDeadZones(range.start, range.row, width, stripDefinition);
+    int end = indexWithoutDeadZones(range.end, range.row, width, stripDefinition);
     int firstIndex = end > start ? start : end + 1;
     int lastIndex = end > start ? end : start + 1;
     if (withoutDeadZones >= firstIndex) {

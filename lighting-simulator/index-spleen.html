@@ -42,7 +42,6 @@
       }
       #pixel-grid {
         filter: brightness(3);
-        transform: scale(-1, 1);
       }
       .diffuse #pixel-grid {
         filter: blur(15px) brightness(3);
@@ -68,15 +67,44 @@
       const FPS = 30;
       const SHOW_INDEX = false;
 
-      const DEADZONES = {
-        // TODO
+      const SPLEEN_DEADZONES = {
+        8: [ [ 23, 38 ] ],
+        9: [ [ 23, 38 ] ],
+        10: [ [ 22, 38 ] ],
+        11: [ [ 22, 38 ] ],
+        12: [ [ 22, 38 ] ],
+        13: [ [ 22, 38 ] ],
+        14: [ [ 21, 38 ] ],
+        15: [ [ 21, 38 ] ],
+        16: [ [ 21, 38 ] ],
+        17: [ [ 21, 38 ] ],
+        18: [ [ 21, 38 ] ],
+        19: [ [ 20, 38 ] ],
+        20: [ [ 11, 15 ], [ 20, 38 ] ],
+        21: [ [ 10, 15 ], [ 20, 38 ] ],
+        22: [ [ 10, 15 ], [ 19, 38 ] ],
+        23: [ [ 10, 38 ] ],
+        24: [ [ 10, 38 ] ],
+        25: [ [ 9, 38 ] ]
       };
 
-      const PADDING = [
-        // TODO
-      ];
+      const SPLEEN_PADDING = [
+        // First four strips are only 76 pixels long
+        [ 76, 14 ], // Add 14 logical pixels after pixel 75 (0-indexed)
+        [ 166, 14 ],
+        [ 256, 14 ],
+        [ 346, 14 ],
 
-      const STRIP_DEF = [5, 5, 5, 5, 5, 5, 5, 0];
+        // Fifth strip is the full 90
+        
+        // Sixth is 86
+        [ 536, 4 ],
+
+        // Seventh is 83
+        [ 609, 7 ]
+
+        // Eighth is 74
+      ];
 
       let width = 0;
       let height = 0;
@@ -128,7 +156,7 @@
       Module.onRuntimeInitialized = () => {
         width = _getWidth();
         height = _getHeight();
-        createPixels(width, height, DEADZONES, PADDING, STRIP_DEF);
+        createPixels(width, height, SPLEEN_DEADZONES, SPLEEN_PADDING);
         setTimeout(animate, 0); // Needs to be delayed, or there's a memory access error?
       }
 
@@ -144,30 +172,15 @@
         return false;
       }
 
-      function isRowReversed(rowIndex, strips) {
-        if (!strips) {
-          return rowIndex % 2 > 0;
-        }
-        let r = rowIndex;
-        for (const stripRows of strips) {
-          if (r < stripRows) {
-            break;
-          }
-          r -= stripRows;
-        }
-        return r % 2 > 0;
-      }
-
-      function createPixels(width, height, deadzones, logicalPadding, stripDefinition) {
+      function createPixels(width, height, deadzones, logicalPadding) {
         const grid = document.getElementById('pixel-grid');
         stripLength = 0;
         let padIndex = 0;
         for (let y = 0; y < height; y++) {
-          const reversed = isRowReversed(y, stripDefinition);
           const row = document.createElement('div');
           row.className='row';
           for (let col = 0; col < width; col++) {
-            const x = !reversed ? col : (width - 1) - col;
+            const x = y % 2 == 0 ? col : (width - 1) - col;
             const pixel = document.createElement('div');
             if (isInDeadZone(x, y, deadzones)) {
               pixel.className = 'pixel dead';
@@ -188,7 +201,7 @@
               }
 
             }
-            if (reversed) {
+            if (y % 2 > 0) {
               row.prepend(pixel);
             }
             else {

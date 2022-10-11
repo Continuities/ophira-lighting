@@ -9,8 +9,8 @@
  * in an Adruino sketch.
  * ================================================= */
 
-#define WIDTH 44
-#define HEIGHT 43
+#define HEIGHT 26 // Height of the pixel grid
+#define WIDTH 38 // Width of the pixel grid
 #define STRIP_LENGTH HEIGHT * WIDTH // number of pixels in the strip
 
 // Current Palette
@@ -32,7 +32,6 @@ const Palette XRAY = {
   { 182, 239, 194 },//{ 148, 202, 203 }, // accent
   { 251, 250, 251 } // highlight
 };
-const int STRIP_DEF[] = {5, 5, 5, 5, 5, 5, 5, 0};
 
 RGB strip[STRIP_LENGTH];
 RGB** frameBuffer;
@@ -47,11 +46,43 @@ Layers::Ether ether = Layers::Ether(WIDTH, HEIGHT, XRAY);
 Layers::Dots dots = Layers::Dots(WIDTH, HEIGHT, XRAY);
 Layers::Splotches splotches = Layers::Splotches(WIDTH, HEIGHT, XRAY);
 
-LightMapper lightMapper = LightMapper(WIDTH, HEIGHT, STRIP_DEF);
+LightMapper lightMapper = LightMapper(WIDTH, HEIGHT);
 
 // Wall-specific layout definitions
-void addLymphParameters() {
-  // TODO
+void addSpleenParameters() {
+  lightMapper.addDeadZone({ 8, 23, 38 });
+  lightMapper.addDeadZone({ 9, 23, 38 });
+  lightMapper.addDeadZone({ 10, 22, 38 });
+  lightMapper.addDeadZone({ 11, 22, 38 });
+  lightMapper.addDeadZone({ 12, 22, 38 });
+  lightMapper.addDeadZone({ 13, 22, 38 });
+  lightMapper.addDeadZone({ 14, 21, 38 });
+  lightMapper.addDeadZone({ 15, 21, 38 });
+  lightMapper.addDeadZone({ 16, 21, 38 });
+  lightMapper.addDeadZone({ 17, 21, 38 });
+  lightMapper.addDeadZone({ 18, 21, 38 });
+  lightMapper.addDeadZone({ 19, 20, 38 });
+  lightMapper.addDeadZone({ 20, 11, 15 });
+  lightMapper.addDeadZone({ 20, 20, 38 });
+  lightMapper.addDeadZone({ 21, 10, 15 });
+  lightMapper.addDeadZone({ 21, 20, 38 });
+  lightMapper.addDeadZone({ 22, 10, 15 });
+  lightMapper.addDeadZone({ 22, 19, 38 });
+  lightMapper.addDeadZone({ 23, 10, 38 });
+  lightMapper.addDeadZone({ 24, 10, 38 });
+  lightMapper.addDeadZone({ 25, 9, 38 });
+
+
+  // Pad each of the eight lines to 90 pixels
+  // First four lines are 76 pixels long
+  lightMapper.addPadding(76, 14);
+  lightMapper.addPadding(166, 14);
+  lightMapper.addPadding(256, 14);
+  lightMapper.addPadding(346, 14);
+  // Sixth is 86
+  lightMapper.addPadding(536, 4);
+  // Seventh is 83
+  lightMapper.addPadding(609, 7);
 }
 
 /**
@@ -68,7 +99,7 @@ int main(int argc, char ** argv) {
   // Add deadzones and logical padding
   // This should mirror the "physical" strip construction
   // in index.html
-  addLymphParameters();
+  addSpleenParameters();
 
   // initialize the frame buffer
   frameBuffer = new RGB*[WIDTH];
@@ -80,13 +111,13 @@ int main(int argc, char ** argv) {
   }
 
   // Push a few layers into the composition stack
-  engine.push(&testPattern);
+  // engine.push(&testPattern);
   // engine.push(&black);
   // engine.push(&spread);
-  // engine.push(&ether);
-  // engine.push(&dots);
-  // engine.push(&splotches);
-  // engine.push(&glitch);
+  engine.push(&ether);
+  engine.push(&dots);
+  engine.push(&splotches);
+  engine.push(&glitch);
 }
 
 /* =================================================

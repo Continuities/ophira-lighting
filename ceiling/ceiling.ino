@@ -2,10 +2,13 @@
 #include <LayerEngine.h>
 #include <LightMapper.h>
 
+// Strips 1-7 are 8 rows each
+// Strip 8 is 3 rows
+
 #define FPS 30
 #define WIDTH 47
 #define HEIGHT 59
-#define NUM_LEDS 368
+#define NUM_LEDS 376
 #define BRIGHTNESS 128 // 255
 #define GLITCH_MIN_TIME 10000 // ms
 #define GLITCH_MAX_TIME 60000 // ms
@@ -48,8 +51,6 @@ Adafruit_NeoPXL8 strip(NUM_LEDS, pins, NEO_BRG);
 
 
 void addCeilingParameters() {
-  
-  
   
   
 }
